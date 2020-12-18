@@ -14,6 +14,7 @@ public class GradStudentUngradReasons {
 	private UUID id;
 	private String pen;
 	private String ungradReasonCode;
+	private String ungradReasonName;
 	private String createdBy;
 	private Date createdTimestamp;
 	private String updatedBy;
@@ -21,10 +22,12 @@ public class GradStudentUngradReasons {
 	
 	@Override
 	public String toString() {
-		return "GradCountry [id=" + id + ", pen=" + pen + ", ungradReasonCode=" + ungradReasonCode + ", createdBy="
-				+ createdBy + ", createdTimestamp=" + createdTimestamp + ", updatedBy=" + updatedBy
-				+ ", updatedTimestamp=" + updatedTimestamp + "]";
+		return "GradStudentUngradReasons [id=" + id + ", pen=" + pen + ", ungradReasonCode=" + ungradReasonCode
+				+ ", ungradReasonName=" + ungradReasonName + ", createdBy=" + createdBy + ", createdTimestamp="
+				+ createdTimestamp + ", updatedBy=" + updatedBy + ", updatedTimestamp=" + updatedTimestamp + "]";
 	}
+	
+	
 	
 	
 	

@@ -17,6 +17,7 @@ public class GradStudentCareerProgram {
 	private UUID id;
 	private String pen; 	
 	private String careerProgramCode;	
+	private String careerProgramName;
 	private String createdBy;
 	private Date createdTimestamp;	
 	private String updatedBy;	
@@ -24,10 +25,12 @@ public class GradStudentCareerProgram {
 	
 	@Override
 	public String toString() {
-		return "GradCertificateTypes [id=" + id + ", pen=" + pen + ", careerProgramCode=" + careerProgramCode
-				+ ", createdBy=" + createdBy + ", createdTimestamp=" + createdTimestamp + ", updatedBy=" + updatedBy
-				+ ", updatedTimestamp=" + updatedTimestamp + "]";
+		return "GradStudentCareerProgram [id=" + id + ", pen=" + pen + ", careerProgramCode=" + careerProgramCode
+				+ ", careerProgramName=" + careerProgramName + ", createdBy=" + createdBy + ", createdTimestamp="
+				+ createdTimestamp + ", updatedBy=" + updatedBy + ", updatedTimestamp=" + updatedTimestamp + "]";
 	}
+	
+	
 	
 	
 }
