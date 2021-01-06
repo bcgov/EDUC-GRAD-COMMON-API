@@ -20,6 +20,7 @@ import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
@@ -93,5 +94,15 @@ public class CommonService {
 
           return gradStudentCareerProgramList;
   	}
+
+    public boolean getStudentUngradReasons(String reasonCode) {
+		List<GradStudentUngradReasonsEntity> gradList = gradStudentUngradReasonsRepository.existsByReasonCode(reasonCode);
+		if(gradList.size() > 0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
     
 }

@@ -12,6 +12,7 @@ public class EducGradCommonApiConstants {
         
        
     public static final String GET_ALL_STUDENT_UNGRAD_MAPPING = "/studentungradreason/pen/{pen}";
+    public static final String GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING = "/ungrad/{reasonCode}";
     
     
     //Default Attribute value constants

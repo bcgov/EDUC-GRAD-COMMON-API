@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -19,7 +20,9 @@ import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.service.CommonService;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
+import ca.bc.gov.educ.api.common.util.GradValidation;
 import ca.bc.gov.educ.api.common.util.PermissionsContants;
+import ca.bc.gov.educ.api.common.util.ResponseHelper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,24 +39,37 @@ public class CommonController {
     @Autowired
     CommonService codeService;
     
+    @Autowired
+	GradValidation validation;
+    
+    @Autowired
+	ResponseHelper response;
+    
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_UNGRAD_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_UNGRAD_REASONS_DATA)
-    public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(@PathVariable String pen) { 
+    public ResponseEntity<List<GradStudentUngradReasons>> getAllStudentUngradReasonsList(@PathVariable String pen) { 
     	logger.debug("getAllStudentUngradReasonsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return codeService.getAllStudentUngradReasonsList(pen,accessToken);
+        return response.GET(codeService.getAllStudentUngradReasonsList(pen,accessToken));
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_UNGRAD_REASONS_DATA)
+    public ResponseEntity<Boolean> getStudentUngradReasons(@PathVariable String reasonCode) { 
+    	logger.debug("getStudentUngradReasons : ");
+        return response.GET(codeService.getStudentUngradReasons(reasonCode));
     }
     
    
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_CAREER_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_CAREER_DATA)
-    public List<GradStudentCareerProgram> getAllStudentCareerProgramsList(@PathVariable String pen) { 
+    public ResponseEntity<List<GradStudentCareerProgram>> getAllStudentCareerProgramsList(@PathVariable String pen) { 
     	logger.debug("getAllStudentCareerProgramsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return codeService.getAllGradStudentCareerProgramList(pen,accessToken);
+        return response.GET(codeService.getAllGradStudentCareerProgramList(pen,accessToken));
     }
     
    
