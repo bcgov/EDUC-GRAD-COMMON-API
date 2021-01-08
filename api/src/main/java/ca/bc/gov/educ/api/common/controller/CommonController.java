@@ -61,6 +61,13 @@ public class CommonController {
         return response.GET(codeService.getStudentUngradReasons(reasonCode));
     }
     
+    @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_CAREER_DATA)
+    public ResponseEntity<Boolean> getStudentCareerProgram(@PathVariable String reasonCode) { 
+    	logger.debug("getStudentCareerProgram : ");
+        return response.GET(codeService.getStudentCareerProgram(reasonCode));
+    }
+    
    
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_CAREER_MAPPING)
