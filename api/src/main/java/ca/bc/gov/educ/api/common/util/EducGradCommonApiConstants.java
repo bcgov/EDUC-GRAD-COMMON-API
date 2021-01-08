@@ -13,6 +13,7 @@ public class EducGradCommonApiConstants {
        
     public static final String GET_ALL_STUDENT_UNGRAD_MAPPING = "/studentungradreason/pen/{pen}";
     public static final String GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING = "/ungrad/{reasonCode}";
+    public static final String GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING = "/career/{cpCode}";
     
     
     //Default Attribute value constants
@@ -27,4 +28,5 @@ public class EducGradCommonApiConstants {
     public static final String TRAX_DATE_FORMAT = "yyyyMM";
 	public static final String ENDPOINT_UNGRAD_REASON_BY_CODE_URL = "${endpoint.code-api.ungrad_reason.ungrad_reasons-by-ungrad-code.url}";
 	public static final String ENDPOINT_CAREER_PROGRAM_BY_CODE_URL = "${endpoint.code-api.career_program.career_program-by-career-code.url}";
+	
 }
