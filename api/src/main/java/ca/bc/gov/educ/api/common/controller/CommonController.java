@@ -63,9 +63,9 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_CAREER_DATA)
-    public ResponseEntity<Boolean> getStudentCareerProgram(@PathVariable String reasonCode) { 
+    public ResponseEntity<Boolean> getStudentCareerProgram(@PathVariable String cpCode) { 
     	logger.debug("getStudentCareerProgram : ");
-        return response.GET(codeService.getStudentCareerProgram(reasonCode));
+        return response.GET(codeService.getStudentCareerProgram(cpCode));
     }
     
    
