@@ -8,12 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Immutable;
-
 import lombok.Data;
 
 @Data
-@Immutable
 @Entity
 @Table(name = "GRAD_STUDENT_CAREER_PROGRAM")
 public class GradStudentCareerProgramEntity {
@@ -25,7 +22,7 @@ public class GradStudentCareerProgramEntity {
 	@Column(name = "PEN", nullable = false)
     private String pen; 
 	
-	@Column(name = "CAREER_PROGRAM_CODE", nullable = true)
+	@Column(name = "FK_GRAD_CAREER_PROGRAM_CODE", nullable = false)
     private String careerProgramCode;
 	
 	@Column(name = "CREATED_BY", nullable = true)
