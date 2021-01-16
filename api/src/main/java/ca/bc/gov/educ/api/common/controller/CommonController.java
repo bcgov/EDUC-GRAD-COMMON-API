@@ -13,12 +13,16 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentReport;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.service.CommonService;
+import ca.bc.gov.educ.api.common.util.ApiResponseModel;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 import ca.bc.gov.educ.api.common.util.GradValidation;
 import ca.bc.gov.educ.api.common.util.PermissionsContants;
@@ -77,6 +81,13 @@ public class CommonController {
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
         return response.GET(codeService.getAllGradStudentCareerProgramList(pen,accessToken));
+    }
+    
+    @PostMapping (EducGradCommonApiConstants.UPDATE_STUDENT_REPORT)
+    @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_REPORTS)
+    public ResponseEntity<ApiResponseModel<GradStudentReport>> saveStudentReport(@PathVariable String pen, @RequestBody GradStudentReport gradStudentReport) {
+        logger.debug("Save student Grad Report for PEN: " + pen);
+        return response.UPDATED(codeService.saveGradReports(pen,gradStudentReport));
     }
     
    

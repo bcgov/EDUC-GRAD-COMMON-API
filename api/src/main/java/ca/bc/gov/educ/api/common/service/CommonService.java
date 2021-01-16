@@ -3,6 +3,7 @@ package ca.bc.gov.educ.api.common.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -18,13 +19,17 @@ import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentReport;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentReportEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
+import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
+import ca.bc.gov.educ.api.common.repository.GradStudentReportRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiUtils;
@@ -40,7 +45,13 @@ public class CommonService {
     private GradStudentUngradReasonsRepository gradStudentUngradReasonsRepository; 
     
     @Autowired
-    private GradStudentCareerProgramRepository gradStudentCareerProgramRepository;  
+    private GradStudentCareerProgramRepository gradStudentCareerProgramRepository;
+    
+    @Autowired
+    private GradStudentReportRepository gradStudentReportRepository;
+    
+    @Autowired
+    private GradStudentReportTransformer gradStudentReportTransformer;
 
     @Autowired
     private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
@@ -111,6 +122,23 @@ public class CommonService {
 			return true;
 		}else {
 			return false;
+		}
+	}
+
+	public GradStudentReport saveGradReports(String pen, GradStudentReport gradStudentReport) {
+		GradStudentReportEntity toBeSaved = gradStudentReportTransformer.transformToEntity(gradStudentReport);
+		Optional<GradStudentReportEntity> existingEnity = gradStudentReportRepository.findById(pen);
+		if(existingEnity.isPresent()) {
+			GradStudentReportEntity gradEntity = existingEnity.get();
+			if(gradStudentReport.getStudentAchievementReport() != null) {
+				gradEntity.setStudentAchievementReport(gradStudentReport.getStudentAchievementReport());
+			}
+			if(gradStudentReport.getStudentTranscriptReport() != null) {
+				gradEntity.setStudentTranscriptReport(gradStudentReport.getStudentTranscriptReport());
+			}
+			return gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.save(gradEntity));
+		}else {
+			return gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.save(toBeSaved));
 		}
 	}
 	
