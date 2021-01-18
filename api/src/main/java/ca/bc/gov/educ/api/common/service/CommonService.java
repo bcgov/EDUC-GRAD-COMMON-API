@@ -1,19 +1,25 @@
 package ca.bc.gov.educ.api.common.service;
 
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -140,6 +146,38 @@ public class CommonService {
 		}else {
 			return gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.save(toBeSaved));
 		}
+	}
+	
+	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
+		GradStudentReport studentReport = gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.findById(pen));
+		if(studentReport != null) {
+			if(reportType.equalsIgnoreCase("STUDENTACHIEVEMENT")) {
+				if(studentReport.getStudentAchievementReport() != null) {
+					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getStudentAchievementReport()).getBytes(StandardCharsets.US_ASCII));
+					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
+				    HttpHeaders headers = new HttpHeaders();
+			        headers.add("Content-Disposition", "inline; filename=studentachievementreport.pdf");
+				    return ResponseEntity
+			                .ok()
+			                .headers(headers)
+			                .contentType(MediaType.APPLICATION_PDF)
+			                .body(new InputStreamResource(bis));
+				}
+			}else if(reportType.equalsIgnoreCase("STUDENTTRANSCRIPT")) {
+				if(studentReport.getStudentAchievementReport() != null) {
+					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getStudentTranscriptReport()).getBytes(StandardCharsets.US_ASCII));
+					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
+				    HttpHeaders headers = new HttpHeaders();
+			        headers.add("Content-Disposition", "inline; filename=studenttranscriptreport.pdf");
+				    return ResponseEntity
+			                .ok()
+			                .headers(headers)
+			                .contentType(MediaType.APPLICATION_PDF)
+			                .body(new InputStreamResource(bis));
+				}
+			}
+		}
+		return null;
 	}
 	
     

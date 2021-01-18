@@ -10,6 +10,7 @@ public class EducGradCommonApiConstants {
     public static final String GRAD_COMMON_API_ROOT_MAPPING = "/api/" + API_VERSION + "/common";
     public static final String GET_ALL_STUDENT_CAREER_MAPPING = "/studentcareerprogram/pen/{pen}";
     public static final String UPDATE_STUDENT_REPORT = "/studentreport/pen/{pen}";
+    public static final String GET_STUDENT_REPORTS = "/studentreport";
         
        
     public static final String GET_ALL_STUDENT_UNGRAD_MAPPING = "/studentungradreason/pen/{pen}";
