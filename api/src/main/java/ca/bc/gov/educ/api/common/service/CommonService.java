@@ -164,7 +164,7 @@ public class CommonService {
 			                .body(new InputStreamResource(bis));
 				}
 			}else if(reportType.equalsIgnoreCase("STUDENTTRANSCRIPT")) {
-				if(studentReport.getStudentAchievementReport() != null) {
+				if(studentReport.getStudentTranscriptReport() != null) {
 					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getStudentTranscriptReport()).getBytes(StandardCharsets.US_ASCII));
 					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
 				    HttpHeaders headers = new HttpHeaders();
