@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
-import ca.bc.gov.educ.api.common.model.dto.GradStudentReport;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.service.CommonService;
 import ca.bc.gov.educ.api.common.util.ApiResponseModel;
@@ -85,14 +85,30 @@ public class CommonController {
         return response.GET(codeService.getAllGradStudentCareerProgramList(pen,accessToken));
     }
     
-    @PostMapping (EducGradCommonApiConstants.UPDATE_STUDENT_REPORT)
-    @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_REPORTS)
-    public ResponseEntity<ApiResponseModel<GradStudentReport>> saveStudentReport(@PathVariable String pen, @RequestBody GradStudentReport gradStudentReport) {
-        logger.debug("Save student Grad Report for PEN: " + pen);
-        return response.UPDATED(codeService.saveGradReports(pen,gradStudentReport));
+    @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CERTIFICATE_BY_CERTIFICATE_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateType) { 
+    	logger.debug("getStudentCertifcate : ");
+        return response.GET(codeService.getStudentCertificate(certificateType));
     }
     
-    @GetMapping(EducGradCommonApiConstants.GET_STUDENT_REPORTS)
+    @GetMapping(EducGradCommonApiConstants.GET_STUDENT_REPORT_BY_REPORT_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
+    public ResponseEntity<Boolean> getStudentReport(@PathVariable String reasonType) { 
+    	logger.debug("getStudentReport : ");
+        return response.GET(codeService.getStudentReport(reasonType));
+    }
+    
+    
+    @PostMapping (EducGradCommonApiConstants.STUDENT_REPORT)
+    @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_REPORTS)
+    public ResponseEntity<ApiResponseModel<GradStudentReports>> saveStudentReport(@RequestBody GradStudentReports gradStudentReports) {
+        logger.debug("Save student Grad Report for PEN: " + gradStudentReports.getPen());
+        validation.requiredField(gradStudentReports.getPen(), "Pen");
+        return response.UPDATED(codeService.saveGradReports(gradStudentReports));
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.STUDENT_REPORT)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
     public ResponseEntity<InputStreamResource> getStudentReportByType(
     		@RequestParam(value = "pen", required = true) String pen,
