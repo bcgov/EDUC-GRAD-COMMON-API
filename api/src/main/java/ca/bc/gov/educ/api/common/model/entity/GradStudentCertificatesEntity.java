@@ -38,7 +38,7 @@ public class GradStudentCertificatesEntity {
     @Column(name = "CERTIFICATE", columnDefinition="CLOB")
 	private String certificate;
 	
-	@Column(name = "FK_GRAD_CERTIFICATE_TYPES_CODE", nullable = true)
+	@Column(name = "FK_GRAD_CERTIFICATE_TYPES_CODE", nullable = false)
     private String gradCertificateTypeCode;
 	
 	@Column(name = "CREATED_BY", nullable = true)
