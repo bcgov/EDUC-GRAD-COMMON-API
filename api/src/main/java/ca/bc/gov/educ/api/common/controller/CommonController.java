@@ -87,14 +87,14 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CERTIFICATE_BY_CERTIFICATE_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
-    public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateType) { 
+    public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateTypeCode) { 
     	logger.debug("getStudentCertifcate : ");
         return response.GET(codeService.getStudentCertificate(certificateType));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_REPORT_BY_REPORT_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
-    public ResponseEntity<Boolean> getStudentReport(@PathVariable String reasonType) { 
+    public ResponseEntity<Boolean> getStudentReport(@PathVariable String reportTypeCode) { 
     	logger.debug("getStudentReport : ");
         return response.GET(codeService.getStudentReport(reasonType));
     }
