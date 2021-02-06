@@ -25,17 +25,22 @@ import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
-import ca.bc.gov.educ.api.common.model.dto.GradStudentReport;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
-import ca.bc.gov.educ.api.common.model.entity.GradStudentReportEntity;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentReportsEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
+import ca.bc.gov.educ.api.common.model.transformer.GradStudentCertificatesTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportTransformer;
+import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportsTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
+import ca.bc.gov.educ.api.common.repository.GradStudentCertificatesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentReportRepository;
+import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiUtils;
@@ -61,6 +66,18 @@ public class CommonService {
 
     @Autowired
     private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
+    
+    @Autowired
+    private GradStudentCertificatesTransformer gradStudentCertificatesTransformer;
+    
+    @Autowired
+    private GradStudentCertificatesRepository gradStudentCertificatesRepository; 
+    
+    @Autowired
+    private GradStudentReportsTransformer gradStudentReportsTransformer;
+    
+    @Autowired
+    private GradStudentReportsRepository gradStudentReportsRepository; 
     
     @Value(EducGradCommonApiConstants.ENDPOINT_UNGRAD_REASON_BY_CODE_URL)
     private String getUngradReasonByCodeURL;
@@ -131,29 +148,26 @@ public class CommonService {
 		}
 	}
 
-	public GradStudentReport saveGradReports(String pen, GradStudentReport gradStudentReport) {
-		GradStudentReportEntity toBeSaved = gradStudentReportTransformer.transformToEntity(gradStudentReport);
-		Optional<GradStudentReportEntity> existingEnity = gradStudentReportRepository.findById(pen);
+	public GradStudentReports saveGradReports(GradStudentReports gradStudentReports) {
+		GradStudentReportsEntity toBeSaved = gradStudentReportsTransformer.transformToEntity(gradStudentReports);
+		Optional<GradStudentReportsEntity> existingEnity = gradStudentReportsRepository.findByPenAndGradReportTypeCode(gradStudentReports.getPen(), gradStudentReports.getGradReportTypeCode());
 		if(existingEnity.isPresent()) {
-			GradStudentReportEntity gradEntity = existingEnity.get();
-			if(gradStudentReport.getStudentAchievementReport() != null) {
-				gradEntity.setStudentAchievementReport(gradStudentReport.getStudentAchievementReport());
-			}
-			if(gradStudentReport.getStudentTranscriptReport() != null) {
-				gradEntity.setStudentTranscriptReport(gradStudentReport.getStudentTranscriptReport());
-			}
-			return gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.save(gradEntity));
+			GradStudentReportsEntity gradEntity = existingEnity.get();
+			if(gradStudentReports.getReport() != null) {
+				gradEntity.setReport(gradStudentReports.getReport());
+			}			
+			return gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.save(gradEntity));
 		}else {
-			return gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.save(toBeSaved));
+			return gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.save(toBeSaved));
 		}
 	}
 	
 	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
-		GradStudentReport studentReport = gradStudentReportTransformer.transformToDTO(gradStudentReportRepository.findById(pen));
+		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndReportTypeCode(pen,reportType));
 		if(studentReport != null) {
-			if(reportType.equalsIgnoreCase("STUDENTACHIEVEMENT")) {
-				if(studentReport.getStudentAchievementReport() != null) {
-					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getStudentAchievementReport()).getBytes(StandardCharsets.US_ASCII));
+			if(reportType.equalsIgnoreCase("ACHV")) {
+				if(studentReport.getReport() != null) {
+					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
 					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
 				    HttpHeaders headers = new HttpHeaders();
 			        headers.add("Content-Disposition", "inline; filename=studentachievementreport.pdf");
@@ -163,9 +177,9 @@ public class CommonService {
 			                .contentType(MediaType.APPLICATION_PDF)
 			                .body(new InputStreamResource(bis));
 				}
-			}else if(reportType.equalsIgnoreCase("STUDENTTRANSCRIPT")) {
-				if(studentReport.getStudentTranscriptReport() != null) {
-					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getStudentTranscriptReport()).getBytes(StandardCharsets.US_ASCII));
+			}else if(reportType.equalsIgnoreCase("TRAN")) {
+				if(studentReport.getReport() != null) {
+					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
 					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
 				    HttpHeaders headers = new HttpHeaders();
 			        headers.add("Content-Disposition", "inline; filename=studenttranscriptreport.pdf");
@@ -178,6 +192,24 @@ public class CommonService {
 			}
 		}
 		return null;
+	}
+
+	public boolean getStudentCertificate(String certificateType) {
+		List<GradStudentCertificatesEntity> gradList = gradStudentCertificatesRepository.existsByCertificateTypeCode(certificateType);
+		if(gradList.size() > 0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public boolean getStudentReport(String reasonType) {
+		List<GradStudentReportsEntity> gradList = gradStudentReportsRepository.existsByReportTypeCode(reasonType);
+		if(gradList.size() > 0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	
     
