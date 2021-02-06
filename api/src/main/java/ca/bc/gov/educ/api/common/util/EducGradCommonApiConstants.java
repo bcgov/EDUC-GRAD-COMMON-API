@@ -9,13 +9,14 @@ public class EducGradCommonApiConstants {
     public static final String API_VERSION = "v1";
     public static final String GRAD_COMMON_API_ROOT_MAPPING = "/api/" + API_VERSION + "/common";
     public static final String GET_ALL_STUDENT_CAREER_MAPPING = "/studentcareerprogram/pen/{pen}";
-    public static final String UPDATE_STUDENT_REPORT = "/studentreport/pen/{pen}";
-    public static final String GET_STUDENT_REPORTS = "/studentreport";
+    public static final String STUDENT_REPORT = "/studentreport";
         
        
     public static final String GET_ALL_STUDENT_UNGRAD_MAPPING = "/studentungradreason/pen/{pen}";
     public static final String GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING = "/ungrad/{reasonCode}";
     public static final String GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING = "/career/{cpCode}";
+    public static final String GET_STUDENT_CERTIFICATE_BY_CERTIFICATE_CODE_MAPPING = "/certificate/{certificateTypeCode}";
+    public static final String GET_STUDENT_REPORT_BY_REPORT_CODE_MAPPING = "/report/{reportTypeCode}";
     
     
     //Default Attribute value constants
