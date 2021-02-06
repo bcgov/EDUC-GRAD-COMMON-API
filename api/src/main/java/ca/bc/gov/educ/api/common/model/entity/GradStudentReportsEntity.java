@@ -38,7 +38,7 @@ public class GradStudentReportsEntity {
     @Column(name = "REPORT", columnDefinition="CLOB")
 	private String report;
 	
-	@Column(name = "FK_GRAD_REPORT_TYPES_CODE", nullable = true)
+	@Column(name = "FK_GRAD_REPORT_TYPES_CODE", nullable = false)
     private String gradReportTypeCode;
 	
 	@Column(name = "CREATED_BY", nullable = true)
