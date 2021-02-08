@@ -163,7 +163,7 @@ public class CommonService {
 	}
 	
 	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
-		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndReportTypeCode(pen,reportType));
+		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen,reportType));
 		if(studentReport != null) {
 			if(reportType.equalsIgnoreCase("ACHV")) {
 				if(studentReport.getReport() != null) {
