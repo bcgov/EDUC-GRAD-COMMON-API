@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradCertificateTypes;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
@@ -34,12 +36,10 @@ import ca.bc.gov.educ.api.common.model.entity.GradStudentReportsEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCertificatesTransformer;
-import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportsTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentCertificatesRepository;
-import ca.bc.gov.educ.api.common.repository.GradStudentReportRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
@@ -57,12 +57,6 @@ public class CommonService {
     
     @Autowired
     private GradStudentCareerProgramRepository gradStudentCareerProgramRepository;
-    
-    @Autowired
-    private GradStudentReportRepository gradStudentReportRepository;
-    
-    @Autowired
-    private GradStudentReportTransformer gradStudentReportTransformer;
 
     @Autowired
     private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
@@ -84,6 +78,11 @@ public class CommonService {
     
     @Value(EducGradCommonApiConstants.ENDPOINT_CAREER_PROGRAM_BY_CODE_URL)
     private String getCareerProgramByCodeURL;
+    
+    @Value(EducGradCommonApiConstants.ENDPOINT_CERTIFICATE_BY_CODE_URL)
+    private String getCertificateByCodeURL;
+    
+    
     
     @Autowired
     RestTemplate restTemplate;
@@ -164,32 +163,18 @@ public class CommonService {
 	
 	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
 		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen,reportType));
-		if(studentReport != null) {
-			if(reportType.equalsIgnoreCase("ACHV")) {
-				if(studentReport.getReport() != null) {
-					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
-					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
-				    HttpHeaders headers = new HttpHeaders();
-			        headers.add("Content-Disposition", "inline; filename=studentachievementreport.pdf");
-				    return ResponseEntity
-			                .ok()
-			                .headers(headers)
-			                .contentType(MediaType.APPLICATION_PDF)
-			                .body(new InputStreamResource(bis));
-				}
-			}else if(reportType.equalsIgnoreCase("TRAN")) {
-				if(studentReport.getReport() != null) {
-					byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
-					ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
-				    HttpHeaders headers = new HttpHeaders();
-			        headers.add("Content-Disposition", "inline; filename=studenttranscriptreport.pdf");
-				    return ResponseEntity
-			                .ok()
-			                .headers(headers)
-			                .contentType(MediaType.APPLICATION_PDF)
-			                .body(new InputStreamResource(bis));
-				}
-			}
+		if(studentReport != null) {			
+			if(studentReport.getReport() != null) {
+				byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
+				ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
+			    HttpHeaders headers = new HttpHeaders();
+		        headers.add("Content-Disposition", "inline; filename=student_"+reportType+"_report.pdf");
+			    return ResponseEntity
+		                .ok()
+		                .headers(headers)
+		                .contentType(MediaType.APPLICATION_PDF)
+		                .body(new InputStreamResource(bis));
+			}			
 		}
 		return null;
 	}
@@ -211,6 +196,55 @@ public class CommonService {
 			return false;
 		}
 	}
-	
-    
+
+	public GradStudentCertificates saveGradCertificates(GradStudentCertificates gradStudentCertificates) {
+		GradStudentCertificatesEntity toBeSaved = gradStudentCertificatesTransformer.transformToEntity(gradStudentCertificates);
+		Optional<GradStudentCertificatesEntity> existingEnity = gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(gradStudentCertificates.getPen(), gradStudentCertificates.getGradCertificateTypeCode());
+		if(existingEnity.isPresent()) {
+			GradStudentCertificatesEntity gradEntity = existingEnity.get();
+			if(gradStudentCertificates.getCertificate() != null) {
+				gradEntity.setCertificate(gradStudentCertificates.getCertificate());
+			}			
+			return gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.save(gradEntity));
+		}else {
+			return gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.save(toBeSaved));
+		}
+	}
+
+	public ResponseEntity<InputStreamResource> getStudentCertificateByType(String pen, String certificateType) {
+		GradStudentCertificates studentCertificate = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen,certificateType));
+		if(studentCertificate != null) {
+			if(studentCertificate.getCertificate() != null) {
+				byte[] certificateByte = Base64.decodeBase64(new String(studentCertificate.getCertificate()).getBytes(StandardCharsets.US_ASCII));
+				ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
+			    HttpHeaders headers = new HttpHeaders();
+		        headers.add("Content-Disposition", "inline; filename=student_"+certificateType+"_certificate.pdf");
+			    return ResponseEntity
+		                .ok()
+		                .headers(headers)
+		                .contentType(MediaType.APPLICATION_PDF)
+		                .body(new InputStreamResource(bis));
+			}
+		}
+		return null;
+	}
+
+	public List<GradStudentCertificates> getAllStudentCertificateList(String pen,String accessToken) {
+		List<GradStudentCertificates> gradStudentCertificatesList  = new ArrayList<GradStudentCertificates>();
+		HttpHeaders httpHeaders = EducGradCommonApiUtils.getHeaders(accessToken);
+		try {
+ 			gradStudentCertificatesList = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
+ 			gradStudentCertificatesList.forEach(sC -> {
+       		GradCertificateTypes gradCertificateTypes = restTemplate.exchange(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode()), HttpMethod.GET,
+       				new HttpEntity<>(httpHeaders), GradCertificateTypes.class).getBody();
+       		if(gradCertificateTypes != null) {
+       			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
+       		}
+       	});
+         } catch (Exception e) {
+             logger.debug("Exception:" + e);
+         }
+
+         return gradStudentCertificatesList;
+	}    
 }

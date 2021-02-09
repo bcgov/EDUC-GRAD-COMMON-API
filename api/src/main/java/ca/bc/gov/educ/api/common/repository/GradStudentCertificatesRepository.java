@@ -13,6 +13,8 @@ import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
 @Repository
 public interface GradStudentCertificatesRepository extends JpaRepository<GradStudentCertificatesEntity, UUID> {
 
+	List<GradStudentCertificatesEntity> findByPen(String pen);
+	
    	Optional<GradStudentCertificatesEntity> findByPenAndGradCertificateTypeCode(String pen,String certificateTypeCode);
    	
    	@Query("select c from GradStudentCertificatesEntity c where c.gradCertificateTypeCode=:certificateType")

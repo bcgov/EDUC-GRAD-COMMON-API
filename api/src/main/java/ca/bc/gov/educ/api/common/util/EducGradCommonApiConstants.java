@@ -10,6 +10,8 @@ public class EducGradCommonApiConstants {
     public static final String GRAD_COMMON_API_ROOT_MAPPING = "/api/" + API_VERSION + "/common";
     public static final String GET_ALL_STUDENT_CAREER_MAPPING = "/studentcareerprogram/pen/{pen}";
     public static final String STUDENT_REPORT = "/studentreport";
+    public static final String STUDENT_CERTIFICATE = "/studentcertificate";
+    public static final String STUDENT_CERTIFICATE_BY_PEN = "/studentcertificate/{pen}";
         
        
     public static final String GET_ALL_STUDENT_UNGRAD_MAPPING = "/studentungradreason/pen/{pen}";
@@ -31,6 +33,6 @@ public class EducGradCommonApiConstants {
     public static final String TRAX_DATE_FORMAT = "yyyyMM";
 	public static final String ENDPOINT_UNGRAD_REASON_BY_CODE_URL = "${endpoint.code-api.ungrad_reason.ungrad_reasons-by-ungrad-code.url}";
 	public static final String ENDPOINT_CAREER_PROGRAM_BY_CODE_URL = "${endpoint.code-api.career_program.career_program-by-career-code.url}";
-	
+	public static final String ENDPOINT_CERTIFICATE_BY_CODE_URL = "${endpoint.code-api.certificate_type.certificate-by-code.url}";
 	
 }
