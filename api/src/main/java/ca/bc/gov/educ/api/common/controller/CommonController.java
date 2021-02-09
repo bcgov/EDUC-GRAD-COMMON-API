@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.service.CommonService;
@@ -115,6 +116,32 @@ public class CommonController {
     		@RequestParam(value = "reportType", required = true) String reportType) { 
     	logger.debug("getStudentReportByType : ");
     	return codeService.getStudentReportByType(pen,reportType);
+    }
+    
+    @PostMapping (EducGradCommonApiConstants.STUDENT_CERTIFICATE)
+    @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_CERTIFICATES)
+    public ResponseEntity<ApiResponseModel<GradStudentCertificates>> saveStudentCertificate(@RequestBody GradStudentCertificates gradStudentCertificates) {
+        logger.debug("Save student Grad Certificate for PEN: " + gradStudentCertificates.getPen());
+        validation.requiredField(gradStudentCertificates.getPen(), "Pen");
+        return response.UPDATED(codeService.saveGradCertificates(gradStudentCertificates));
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE)
+    @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    public ResponseEntity<InputStreamResource> getStudentCertificateByType(
+    		@RequestParam(value = "pen", required = true) String pen,
+    		@RequestParam(value = "certificateType", required = true) String certificateType) { 
+    	logger.debug("getStudentCertificateByType : ");
+    	return codeService.getStudentCertificateByType(pen,certificateType);
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE_BY_PEN)
+    @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    public ResponseEntity<List<GradStudentCertificates>> getAllStudentCertificateList(@PathVariable String pen) { 
+    	logger.debug("getAllStudentCertificateList : ");
+    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
+    	String accessToken = auth.getTokenValue();
+        return response.GET(codeService.getAllStudentCertificateList(pen,accessToken));
     }
    
 }
