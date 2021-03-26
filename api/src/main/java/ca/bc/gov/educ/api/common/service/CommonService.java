@@ -4,6 +4,8 @@ package ca.bc.gov.educ.api.common.service;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import ca.bc.gov.educ.api.common.model.dto.GradAlgorithmRules;
 import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradCertificateTypes;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
@@ -34,10 +37,12 @@ import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentReportsEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
+import ca.bc.gov.educ.api.common.model.transformer.GradAlgorithmRulesTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCertificatesTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportsTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
+import ca.bc.gov.educ.api.common.repository.GradAlgorithmRulesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentCertificatesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
@@ -66,6 +71,12 @@ public class CommonService {
     
     @Autowired
     private GradStudentCertificatesRepository gradStudentCertificatesRepository; 
+    
+    @Autowired
+    private GradAlgorithmRulesTransformer gradAlgorithmRulesTransformer;
+    
+    @Autowired
+    private GradAlgorithmRulesRepository gradAlgorithmRulesRepository; 
     
     @Autowired
     private GradStudentReportsTransformer gradStudentReportsTransformer;
@@ -246,5 +257,17 @@ public class CommonService {
          }
 
          return gradStudentCertificatesList;
-	}    
+	}
+
+	public List<GradAlgorithmRules> getAlgorithmRulesList(String programCode) {
+		List<GradAlgorithmRules> responseList = gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.getAlgorithmRulesByProgramCode(programCode));
+		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getSortOrder));
+		return responseList;
+	}
+	
+	public List<GradAlgorithmRules> getAlgorithmRulesListForSpecialProgram(String programCode,String specialProgramCode) {
+		List<GradAlgorithmRules> responseList = gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.getAlgorithmRulesByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode));
+		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getSortOrder));
+		return responseList;
+	}
 }
