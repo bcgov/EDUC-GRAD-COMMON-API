@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ca.bc.gov.educ.api.common.model.dto.GradAlgorithmRules;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
@@ -142,6 +143,20 @@ public class CommonController {
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
         return response.GET(codeService.getAllStudentCertificateList(pen,accessToken));
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_MAIN_PROGRAM)
+    @PreAuthorize(PermissionsContants.READ_GRAD_ALGORITHM_RULES)
+    public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesList(@PathVariable String programCode) { 
+    	logger.debug("getAlgorithmRulesList : ");
+        return response.GET(codeService.getAlgorithmRulesList(programCode));
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_SPECIAL_PROGRAM)
+    @PreAuthorize(PermissionsContants.READ_GRAD_ALGORITHM_RULES)
+    public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesListForSpecialProgram(@PathVariable String programCode,@PathVariable String specialProgramCode) { 
+    	logger.debug("getAlgorithmRulesListForSpecialProgram : ");
+        return response.GET(codeService.getAlgorithmRulesListForSpecialProgram(programCode,specialProgramCode));
     }
    
 }
