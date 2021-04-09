@@ -264,10 +264,11 @@ public class CommonService {
 		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getSortOrder));
 		return responseList;
 	}
-	
-	public List<GradAlgorithmRules> getAlgorithmRulesListForSpecialProgram(String programCode,String specialProgramCode) {
-		List<GradAlgorithmRules> responseList = gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.getAlgorithmRulesByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode));
-		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getSortOrder));
+
+	public List<GradAlgorithmRules> getAllAlgorithmRulesList() {
+		List<GradAlgorithmRules> responseList = gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.findAll());
+		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getProgramCode)
+				 .thenComparing(GradAlgorithmRules::getSortOrder));
 		return responseList;
 	}
 }

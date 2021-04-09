@@ -32,14 +32,17 @@ import ca.bc.gov.educ.api.common.util.GradValidation;
 import ca.bc.gov.educ.api.common.util.PermissionsContants;
 import ca.bc.gov.educ.api.common.util.ResponseHelper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @CrossOrigin
 @RestController
 @RequestMapping(EducGradCommonApiConstants.GRAD_COMMON_API_ROOT_MAPPING)
 @EnableResourceServer
-@OpenAPIDefinition(info = @Info(title = "API for Common endpoints.", description = "This Read API is for Reading Common endpoints.", version = "1"), security = {@SecurityRequirement(name = "OAUTH2", scopes = {"READ_GRAD_STUDENT_UNGRAD_REASONS_DATA","READ_GRAD_STUDENT_CAREER_DATA"})})
+@OpenAPIDefinition(info = @Info(title = "API for Common endpoints.", description = "This API is for Reading Common endpoints.", version = "1"), security = {@SecurityRequirement(name = "OAUTH2", scopes = {"READ_GRAD_STUDENT_UNGRAD_REASONS_DATA","READ_GRAD_STUDENT_CAREER_DATA"})})
 public class CommonController {
 
     private static Logger logger = LoggerFactory.getLogger(CommonController.class);
@@ -55,6 +58,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_UNGRAD_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_UNGRAD_REASONS_DATA)
+    @Operation(summary = "Find Student Ungrad Reasons by Pen", description = "Get Student Ungrad Reasons By Pen", tags = { "Ungrad Reasons" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradStudentUngradReasons>> getAllStudentUngradReasonsList(@PathVariable String pen) { 
     	logger.debug("getAllStudentUngradReasonsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
@@ -64,6 +69,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_UNGRAD_REASONS_DATA)
+    @Operation(summary = "Check if Ungrad Reasons is valid", description = "Check if ungrad reason is valid", tags = { "Ungrad Reasons" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentUngradReasons(@PathVariable String reasonCode) { 
     	logger.debug("getStudentUngradReasons : ");
         return response.GET(codeService.getStudentUngradReasons(reasonCode));
@@ -71,6 +78,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_CAREER_DATA)
+    @Operation(summary = "Check if Career Program is valid", description = "Check if Career Program is valid", tags = { "Career Programs" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentCareerProgram(@PathVariable String cpCode) { 
     	logger.debug("getStudentCareerProgram : ");
         return response.GET(codeService.getStudentCareerProgram(cpCode));
@@ -80,6 +89,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_CAREER_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_CAREER_DATA)
+    @Operation(summary = "Find Student Career Program by Pen", description = "Find Student Career Program by Pen", tags = { "Career Programs" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradStudentCareerProgram>> getAllStudentCareerProgramsList(@PathVariable String pen) { 
     	logger.debug("getAllStudentCareerProgramsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
@@ -89,6 +100,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CERTIFICATE_BY_CERTIFICATE_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    @Operation(summary = "Check if Certificate type is valid", description = "Check if Certificate Type is valid", tags = { "Certificates" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateTypeCode) { 
     	logger.debug("getStudentCertifcate : ");
         return response.GET(codeService.getStudentCertificate(certificateTypeCode));
@@ -96,6 +109,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_REPORT_BY_REPORT_CODE_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
+    @Operation(summary = "Check if Report type is valid", description = "Check if Report Type is valid", tags = { "Reports" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentReport(@PathVariable String reportTypeCode) { 
     	logger.debug("getStudentReport : ");
         return response.GET(codeService.getStudentReport(reportTypeCode));
@@ -104,6 +119,8 @@ public class CommonController {
     
     @PostMapping (EducGradCommonApiConstants.STUDENT_REPORT)
     @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_REPORTS)
+    @Operation(summary = "Save Student Reports", description = "Save Student Reports", tags = { "Reports" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<ApiResponseModel<GradStudentReports>> saveStudentReport(@RequestBody GradStudentReports gradStudentReports) {
         logger.debug("Save student Grad Report for PEN: " + gradStudentReports.getPen());
         validation.requiredField(gradStudentReports.getPen(), "Pen");
@@ -112,6 +129,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_REPORT)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
+    @Operation(summary = "Read Student Reports by Pen and Report Type", description = "Read Student Reports by Pen and Report Type", tags = { "Reports" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<InputStreamResource> getStudentReportByType(
     		@RequestParam(value = "pen", required = true) String pen,
     		@RequestParam(value = "reportType", required = true) String reportType) { 
@@ -121,6 +140,8 @@ public class CommonController {
     
     @PostMapping (EducGradCommonApiConstants.STUDENT_CERTIFICATE)
     @PreAuthorize(PermissionsContants.UPDATE_GRADUATION_STUDENT_CERTIFICATES)
+    @Operation(summary = "Save Student Certificate", description = "Save Student Certificate", tags = { "Certificates" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<ApiResponseModel<GradStudentCertificates>> saveStudentCertificate(@RequestBody GradStudentCertificates gradStudentCertificates) {
         logger.debug("Save student Grad Certificate for PEN: " + gradStudentCertificates.getPen());
         validation.requiredField(gradStudentCertificates.getPen(), "Pen");
@@ -129,6 +150,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    @Operation(summary = "Read Student Certificate by Pen and Certificate Type", description = "Read Student Certificate by Pen and Certificate Type", tags = { "Certificates" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<InputStreamResource> getStudentCertificateByType(
     		@RequestParam(value = "pen", required = true) String pen,
     		@RequestParam(value = "certificateType", required = true) String certificateType) { 
@@ -138,6 +161,8 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE_BY_PEN)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
+    @Operation(summary = "Read All  Student Certificates by Pen", description = "Read All Student Certificates by Pen", tags = { "Certificates" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradStudentCertificates>> getAllStudentCertificateList(@PathVariable String pen) { 
     	logger.debug("getAllStudentCertificateList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
@@ -147,16 +172,20 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_MAIN_PROGRAM)
     @PreAuthorize(PermissionsContants.READ_GRAD_ALGORITHM_RULES)
+    @Operation(summary = "Read All  Grad Algorithm Rules by Program Code", description = "Read All  Grad Algorithm Rules by Program Code", tags = { "Algorithm" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesList(@PathVariable String programCode) { 
     	logger.debug("getAlgorithmRulesList : ");
         return response.GET(codeService.getAlgorithmRulesList(programCode));
     }
     
-    @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_SPECIAL_PROGRAM)
+    @GetMapping(EducGradCommonApiConstants.GET_ALL_ALGORITHM_RULES_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_ALGORITHM_RULES)
-    public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesListForSpecialProgram(@PathVariable String programCode,@PathVariable String specialProgramCode) { 
-    	logger.debug("getAlgorithmRulesListForSpecialProgram : ");
-        return response.GET(codeService.getAlgorithmRulesListForSpecialProgram(programCode,specialProgramCode));
+    @Operation(summary = "Read All  Grad Algorithm Rules", description = "Read All  Grad Algorithm Rules", tags = { "Algorithm" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<List<GradAlgorithmRules>> getAllAlgorithmRulesList() { 
+    	logger.debug("getAllAlgorithmRulesList : ");
+        return response.GET(codeService.getAllAlgorithmRulesList());
     }
    
 }

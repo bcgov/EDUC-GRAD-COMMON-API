@@ -1,6 +1,5 @@
 package ca.bc.gov.educ.api.common.model.entity;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -9,11 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "GRAD_STUDENT_CAREER_PROGRAM")
-public class GradStudentCareerProgramEntity {
+public class GradStudentCareerProgramEntity extends BaseEntity {
    
 	@Id
 	@Column(name = "ID", nullable = false)
@@ -24,17 +25,5 @@ public class GradStudentCareerProgramEntity {
 	
 	@Column(name = "FK_GRAD_CAREER_PROGRAM_CODE", nullable = false)
     private String careerProgramCode;
-	
-	@Column(name = "CREATED_BY", nullable = true)
-    private String createdBy;
-	
-	@Column(name = "CREATED_TIMESTAMP", nullable = true)
-    private Date createdTimestamp;
-	
-	@Column(name = "UPDATED_BY", nullable = true)
-    private String updatedBy;
-	
-	@Column(name = "UPDATED_TIMESTAMP", nullable = true)
-    private Date updatedTimestamp;	
 	
 }
