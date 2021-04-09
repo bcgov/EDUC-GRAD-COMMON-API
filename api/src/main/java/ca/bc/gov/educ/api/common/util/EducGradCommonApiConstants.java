@@ -12,7 +12,7 @@ public class EducGradCommonApiConstants {
     public static final String STUDENT_REPORT = "/studentreport";
     public static final String STUDENT_CERTIFICATE = "/studentcertificate";
     public static final String STUDENT_CERTIFICATE_BY_PEN = "/studentcertificate/{pen}";
-    public static final String GET_ALL_ALGORITHM_RULES_MAPPING="/algorithm-rules";
+    public static final String GET_ALL_ALGORITHM_RULES_MAPPING="/algorithmrules";
     
     public static final String GET_ALGORITHM_RULES_MAIN_PROGRAM = "/algorithm-rules/main/{programCode}";
     public static final String GET_ALGORITHM_RULES_SPECIAL_PROGRAM = "/algorithm-rules/special/{programCode}/{specialProgramCode}";
