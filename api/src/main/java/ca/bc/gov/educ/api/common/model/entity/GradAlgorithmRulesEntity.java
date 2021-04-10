@@ -43,8 +43,8 @@ public class GradAlgorithmRulesEntity extends BaseEntity {
 	@Column(name = "FK_GRAD_PROGRAM_CODE", nullable = false)
     private String programCode;
 	
-	@Column(name = "SPECIAL_PROGRAM", nullable = false)
-    private String specialProgramCode;	
+	@Column(name = "IS_ACTIVE", nullable = false)
+    private String isActive;	
 
 	
 }
