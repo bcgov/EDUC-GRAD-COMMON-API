@@ -18,6 +18,6 @@ public class GradAlgorithmRules extends BaseModel {
 	private String ruleDescription;
 	private Integer sortOrder;
 	private String programCode;
-	private String specialProgramCode;	
+	private String isActive;
 	
 }
