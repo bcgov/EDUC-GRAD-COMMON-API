@@ -12,6 +12,6 @@ import ca.bc.gov.educ.api.common.model.entity.GradAlgorithmRulesEntity;
 @Repository
 public interface GradAlgorithmRulesRepository extends JpaRepository<GradAlgorithmRulesEntity, UUID> {
    	
-   	@Query("select c from GradAlgorithmRulesEntity c where c.programCode=:programCode")
+   	@Query("select c from GradAlgorithmRulesEntity c where c.programCode=:programCode and c.isActive='Y'")
 	List<GradAlgorithmRulesEntity> getAlgorithmRulesByProgramCode(String programCode);
 }
