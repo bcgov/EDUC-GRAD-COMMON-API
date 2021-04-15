@@ -15,6 +15,7 @@ public class GradStudentCareerProgram extends BaseModel {
 	private UUID id;
 	private String pen; 	
 	private String careerProgramCode;	
-	private String careerProgramName;	
+	private String careerProgramName;
+	private UUID studentID;
 	
 }
