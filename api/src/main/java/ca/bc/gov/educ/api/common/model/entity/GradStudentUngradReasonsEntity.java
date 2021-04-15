@@ -20,10 +20,13 @@ public class GradStudentUngradReasonsEntity extends BaseEntity {
 	@Column(name = "ID", nullable = false)
     private UUID id; 
 	
-	@Column(name = "PEN", nullable = false)
+	@Column(name = "FK_GRAD_STUDENT_PEN", nullable = false)
     private String pen; 
 	
 	@Column(name = "FK_GRAD_UNGRAD_REASON_CODE", nullable = true)
     private String ungradReasonCode;
+	
+	@Column(name = "FK_GRAD_STUDENT_STUDENT_ID", nullable = false)
+    private UUID studentID;
 		
 }
