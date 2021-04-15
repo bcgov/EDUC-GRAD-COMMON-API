@@ -172,7 +172,7 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_MAIN_PROGRAM)
     @PreAuthorize(PermissionsContants.READ_GRAD_ALGORITHM_RULES)
-    @Operation(summary = "Read All  Grad Algorithm Rules by Program Code", description = "Read All  Grad Algorithm Rules by Program Code", tags = { "Algorithm" })
+    @Operation(summary = "Read All  Grad Algorithm Rules by Program Code", description = "Read All  Grad Algorithm Rules by Program Code which are active", tags = { "Algorithm" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesList(@PathVariable String programCode) { 
     	logger.debug("getAlgorithmRulesList : ");
