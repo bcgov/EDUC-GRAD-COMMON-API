@@ -29,7 +29,7 @@ public class GradStudentCertificatesEntity extends BaseEntity {
 	@Column(name = "ID", nullable = false)
     private UUID id; 
 	
-	@Column(name = "PEN", nullable = false)
+	@Column(name = "FK_GRAD_STUDENT_PEN", nullable = false)
     private String pen; 
 	
 	@Lob
@@ -38,4 +38,7 @@ public class GradStudentCertificatesEntity extends BaseEntity {
 	
 	@Column(name = "FK_GRAD_CERTIFICATE_TYPES_CODE", nullable = false)
     private String gradCertificateTypeCode;	
+	
+	@Column(name = "FK_GRAD_STUDENT_STUDENT_ID", nullable = false)
+    private UUID studentID;
 }
