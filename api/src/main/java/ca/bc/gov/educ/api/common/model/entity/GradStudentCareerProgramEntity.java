@@ -20,10 +20,13 @@ public class GradStudentCareerProgramEntity extends BaseEntity {
 	@Column(name = "ID", nullable = false)
     private UUID id; 
 	
-	@Column(name = "PEN", nullable = false)
-    private String pen; 
+	@Column(name = "FK_GRAD_STUDENT_PEN", nullable = false)
+    private String pen;
 	
 	@Column(name = "FK_GRAD_CAREER_PROGRAM_CODE", nullable = false)
     private String careerProgramCode;
+	
+	@Column(name = "FK_GRAD_STUDENT_STUDENT_ID", nullable = false)
+    private UUID studentID;
 	
 }
