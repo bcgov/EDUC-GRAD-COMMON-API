@@ -17,13 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import ca.bc.gov.educ.api.common.model.dto.GradAlgorithmRules;
 import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
@@ -48,7 +47,6 @@ import ca.bc.gov.educ.api.common.repository.GradStudentCertificatesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
-import ca.bc.gov.educ.api.common.util.EducGradCommonApiUtils;
 
 
 @Service
@@ -93,7 +91,8 @@ public class CommonService {
     @Value(EducGradCommonApiConstants.ENDPOINT_CERTIFICATE_BY_CODE_URL)
     private String getCertificateByCodeURL;
     
-    
+    @Autowired
+    WebClient webClient;
     
     @Autowired
     RestTemplate restTemplate;
@@ -103,12 +102,10 @@ public class CommonService {
     @Transactional
     public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(String pen, String accessToken) {
 	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = new ArrayList<GradStudentUngradReasons>();
-	        HttpHeaders httpHeaders = EducGradCommonApiUtils.getHeaders(accessToken);
 	        try {
 	        	gradStudentUngradReasonsList = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByPen(pen));  
 	        	gradStudentUngradReasonsList.forEach(sC -> {
-	        		GradUngradReasons ungradReasonObj = restTemplate.exchange(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode()), HttpMethod.GET,
-	        				new HttpEntity<>(httpHeaders), GradUngradReasons.class).getBody();
+	        		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
 	        		if(ungradReasonObj != null) {
 	        			sC.setUngradReasonName(ungradReasonObj.getDescription());
 	        		}
@@ -123,12 +120,10 @@ public class CommonService {
     @Transactional
   	public List<GradStudentCareerProgram> getAllGradStudentCareerProgramList(String pen, String accessToken) {
   		List<GradStudentCareerProgram> gradStudentCareerProgramList  = new ArrayList<GradStudentCareerProgram>();
-  		 HttpHeaders httpHeaders = EducGradCommonApiUtils.getHeaders(accessToken);
   		try {
           	gradStudentCareerProgramList = gradStudentCareerProgramTransformer.transformToDTO(gradStudentCareerProgramRepository.findByPen(pen)); 
           	gradStudentCareerProgramList.forEach(sC -> {
-        		GradCareerProgram gradCareerProgram = restTemplate.exchange(String.format(getCareerProgramByCodeURL,sC.getCareerProgramCode()), HttpMethod.GET,
-        				new HttpEntity<>(httpHeaders), GradCareerProgram.class).getBody();
+          		GradCareerProgram gradCareerProgram= webClient.get().uri(String.format(getCareerProgramByCodeURL,sC.getCareerProgramCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCareerProgram.class).block();
         		if(gradCareerProgram != null) {
         			sC.setCareerProgramName(gradCareerProgram.getDescription());
         		}
@@ -242,16 +237,14 @@ public class CommonService {
 
 	public List<GradStudentCertificates> getAllStudentCertificateList(String pen,String accessToken) {
 		List<GradStudentCertificates> gradStudentCertificatesList  = new ArrayList<GradStudentCertificates>();
-		HttpHeaders httpHeaders = EducGradCommonApiUtils.getHeaders(accessToken);
 		try {
  			gradStudentCertificatesList = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
  			gradStudentCertificatesList.forEach(sC -> {
-       		GradCertificateTypes gradCertificateTypes = restTemplate.exchange(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode()), HttpMethod.GET,
-       				new HttpEntity<>(httpHeaders), GradCertificateTypes.class).getBody();
-       		if(gradCertificateTypes != null) {
-       			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
-       		}
-       	});
+	 			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
+	       		if(gradCertificateTypes != null) {
+	       			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
+	       		}
+	       	});
          } catch (Exception e) {
              logger.debug("Exception:" + e);
          }
