@@ -1,17 +1,22 @@
 package ca.bc.gov.educ.api.common.controller;
 
 import java.util.List;
+import java.util.UUID;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +30,7 @@ import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
+import ca.bc.gov.educ.api.common.model.dto.StudentNote;
 import ca.bc.gov.educ.api.common.service.CommonService;
 import ca.bc.gov.educ.api.common.util.ApiResponseModel;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
@@ -48,7 +54,7 @@ public class CommonController {
     private static Logger logger = LoggerFactory.getLogger(CommonController.class);
 
     @Autowired
-    CommonService codeService;
+    CommonService commonService;
     
     @Autowired
 	GradValidation validation;
@@ -64,7 +70,7 @@ public class CommonController {
     	logger.debug("getAllStudentUngradReasonsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return response.GET(codeService.getAllStudentUngradReasonsList(pen,accessToken));
+        return response.GET(commonService.getAllStudentUngradReasonsList(pen,accessToken));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING)
@@ -73,7 +79,7 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentUngradReasons(@PathVariable String reasonCode) { 
     	logger.debug("getStudentUngradReasons : ");
-        return response.GET(codeService.getStudentUngradReasons(reasonCode));
+        return response.GET(commonService.getStudentUngradReasons(reasonCode));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CAREER_PROGRAM_BY_CAREER_PROGRAM_CODE_MAPPING)
@@ -82,7 +88,7 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentCareerProgram(@PathVariable String cpCode) { 
     	logger.debug("getStudentCareerProgram : ");
-        return response.GET(codeService.getStudentCareerProgram(cpCode));
+        return response.GET(commonService.getStudentCareerProgram(cpCode));
     }
     
    
@@ -95,7 +101,7 @@ public class CommonController {
     	logger.debug("getAllStudentCareerProgramsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return response.GET(codeService.getAllGradStudentCareerProgramList(pen,accessToken));
+        return response.GET(commonService.getAllGradStudentCareerProgramList(pen,accessToken));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_CERTIFICATE_BY_CERTIFICATE_CODE_MAPPING)
@@ -104,7 +110,7 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateTypeCode) { 
     	logger.debug("getStudentCertifcate : ");
-        return response.GET(codeService.getStudentCertificate(certificateTypeCode));
+        return response.GET(commonService.getStudentCertificate(certificateTypeCode));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_REPORT_BY_REPORT_CODE_MAPPING)
@@ -113,7 +119,7 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<Boolean> getStudentReport(@PathVariable String reportTypeCode) { 
     	logger.debug("getStudentReport : ");
-        return response.GET(codeService.getStudentReport(reportTypeCode));
+        return response.GET(commonService.getStudentReport(reportTypeCode));
     }
     
     
@@ -124,7 +130,7 @@ public class CommonController {
     public ResponseEntity<ApiResponseModel<GradStudentReports>> saveStudentReport(@RequestBody GradStudentReports gradStudentReports) {
         logger.debug("Save student Grad Report for PEN: " + gradStudentReports.getPen());
         validation.requiredField(gradStudentReports.getPen(), "Pen");
-        return response.UPDATED(codeService.saveGradReports(gradStudentReports));
+        return response.UPDATED(commonService.saveGradReports(gradStudentReports));
     }
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_REPORT)
@@ -135,7 +141,7 @@ public class CommonController {
     		@RequestParam(value = "pen", required = true) String pen,
     		@RequestParam(value = "reportType", required = true) String reportType) { 
     	logger.debug("getStudentReportByType : ");
-    	return codeService.getStudentReportByType(pen,reportType);
+    	return commonService.getStudentReportByType(pen,reportType);
     }
     
     @PostMapping (EducGradCommonApiConstants.STUDENT_CERTIFICATE)
@@ -145,7 +151,7 @@ public class CommonController {
     public ResponseEntity<ApiResponseModel<GradStudentCertificates>> saveStudentCertificate(@RequestBody GradStudentCertificates gradStudentCertificates) {
         logger.debug("Save student Grad Certificate for PEN: " + gradStudentCertificates.getPen());
         validation.requiredField(gradStudentCertificates.getPen(), "Pen");
-        return response.UPDATED(codeService.saveGradCertificates(gradStudentCertificates));
+        return response.UPDATED(commonService.saveGradCertificates(gradStudentCertificates));
     }
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE)
@@ -156,7 +162,7 @@ public class CommonController {
     		@RequestParam(value = "pen", required = true) String pen,
     		@RequestParam(value = "certificateType", required = true) String certificateType) { 
     	logger.debug("getStudentCertificateByType : ");
-    	return codeService.getStudentCertificateByType(pen,certificateType);
+    	return commonService.getStudentCertificateByType(pen,certificateType);
     }
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE_BY_PEN)
@@ -167,7 +173,7 @@ public class CommonController {
     	logger.debug("getAllStudentCertificateList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return response.GET(codeService.getAllStudentCertificateList(pen,accessToken));
+        return response.GET(commonService.getAllStudentCertificateList(pen,accessToken));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_MAIN_PROGRAM)
@@ -176,7 +182,7 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradAlgorithmRules>> getAlgorithmRulesList(@PathVariable String programCode) { 
     	logger.debug("getAlgorithmRulesList : ");
-        return response.GET(codeService.getAlgorithmRulesList(programCode));
+        return response.GET(commonService.getAlgorithmRulesList(programCode));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_ALGORITHM_RULES_MAPPING)
@@ -185,7 +191,40 @@ public class CommonController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<List<GradAlgorithmRules>> getAllAlgorithmRulesList() { 
     	logger.debug("getAllAlgorithmRulesList : ");
-        return response.GET(codeService.getAllAlgorithmRulesList());
+        return response.GET(commonService.getAllAlgorithmRulesList());
+    }
+    
+    @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_NOTES_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_NOTES_DATA)
+    @Operation(summary = "Find Student Notes by Pen", description = "Get Student Notes By Pen", tags = { "Student Notes" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<List<StudentNote>> getAllStudentNotes(@PathVariable String pen) { 
+    	logger.debug("getAllStudentNotes : ");
+        return response.GET(commonService.getAllStudentNotes(pen));
+    }
+    
+    @PostMapping (EducGradCommonApiConstants.STUDENT_NOTES_MAPPING)
+    @PreAuthorize(PermissionsContants.CREATE_OR_UPDATE_GRAD_STUDENT_NOTES_DATA)
+    @Operation(summary = "Create Student Notes", description = "Create Student Notes", tags = { "Student Notes" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<ApiResponseModel<StudentNote>> saveStudentNotes(@RequestBody StudentNote studentNote) {
+        logger.debug("Create student Grad Note for PEN: " + studentNote.getPen());
+        validation.requiredField(studentNote.getPen(), "Pen");
+        return response.UPDATED(commonService.saveStudentNote(studentNote));
+    }
+    
+    @DeleteMapping(EducGradCommonApiConstants.STUDENT_NOTES_DELETE_MAPPING)
+    @PreAuthorize(PermissionsContants.DELETE_GRAD_STUDENT_NOTES_DATA)
+    @Operation(summary = "Delete a note", description = "Delete a note", tags = { "Student Notes" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND.")})
+    public ResponseEntity<Void> deleteNotes(@Valid @PathVariable String noteID) { 
+    	logger.debug("deleteNotes : ");
+    	validation.requiredField(noteID, "Note ID");
+    	if(validation.hasErrors()) {
+    		validation.stopOnErrors();
+    		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    	}
+        return response.DELETE(commonService.deleteNote(UUID.fromString(noteID)));
     }
    
 }
