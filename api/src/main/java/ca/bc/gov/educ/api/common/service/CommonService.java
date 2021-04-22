@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -32,20 +33,24 @@ import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
 import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
 import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
+import ca.bc.gov.educ.api.common.model.dto.StudentNote;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentReportsEntity;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
+import ca.bc.gov.educ.api.common.model.entity.StudentNoteEntity;
 import ca.bc.gov.educ.api.common.model.transformer.GradAlgorithmRulesTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCareerProgramTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentCertificatesTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentReportsTransformer;
 import ca.bc.gov.educ.api.common.model.transformer.GradStudentUngradReasonsTransformer;
+import ca.bc.gov.educ.api.common.model.transformer.StudentNoteTransformer;
 import ca.bc.gov.educ.api.common.repository.GradAlgorithmRulesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentCareerProgramRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentCertificatesRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
+import ca.bc.gov.educ.api.common.repository.StudentNoteRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 
 
@@ -81,6 +86,12 @@ public class CommonService {
     
     @Autowired
     private GradStudentReportsRepository gradStudentReportsRepository; 
+    
+    @Autowired
+    private StudentNoteTransformer  studentNoteTransformer;
+    
+    @Autowired
+    private StudentNoteRepository studentNoteRepository; 
     
     @Value(EducGradCommonApiConstants.ENDPOINT_UNGRAD_REASON_BY_CODE_URL)
     private String getUngradReasonByCodeURL;
@@ -263,5 +274,48 @@ public class CommonService {
 		Collections.sort(responseList, Comparator.comparing(GradAlgorithmRules::getProgramCode)
 				 .thenComparing(GradAlgorithmRules::getSortOrder));
 		return responseList;
+	}
+
+	public List<StudentNote> getAllStudentNotes(String pen) {
+		List<StudentNote> responseList = studentNoteTransformer.transformToDTO(studentNoteRepository.findByPen(pen));
+		Collections.sort(responseList, Comparator.comparing(StudentNote::getUpdatedTimestamp));
+		return responseList;
+	}
+
+	public StudentNote saveStudentNote(StudentNote studentNote) {
+		StudentNoteEntity toBeSaved = studentNoteTransformer.transformToEntity(studentNote);
+		if(studentNote.getId() != null) {
+			Optional<StudentNoteEntity> existingEnity = studentNoteRepository.findById(studentNote.getId());
+			if(existingEnity.isPresent()) {
+				StudentNoteEntity gradEntity = existingEnity.get();
+				if(studentNote.getNote() != null) {
+					gradEntity.setNote(studentNote.getNote());
+				}
+				if(studentNote.getStudentID() != null) {
+					gradEntity.setStudentID(UUID.fromString(studentNote.getStudentID()));
+				}
+				return studentNoteTransformer.transformToDTO(studentNoteRepository.save(gradEntity));
+			}else {
+				if(studentNote.getStudentID() != null) {
+					toBeSaved.setStudentID(UUID.fromString(studentNote.getStudentID()));
+				}
+				return studentNoteTransformer.transformToDTO(studentNoteRepository.save(toBeSaved));
+			}
+		}else {
+			if(studentNote.getStudentID() != null) {
+				toBeSaved.setStudentID(UUID.fromString(studentNote.getStudentID()));
+			}
+			return studentNoteTransformer.transformToDTO(studentNoteRepository.save(toBeSaved));
+		}
+	}
+
+	public int deleteNote(UUID noteID) {
+		Optional<StudentNoteEntity> existingEnity = studentNoteRepository.findById(noteID);
+		if(existingEnity.isPresent()) {
+			studentNoteRepository.deleteById(noteID);
+			return 1;
+		}else {
+			return 0;
+		}
 	}
 }
