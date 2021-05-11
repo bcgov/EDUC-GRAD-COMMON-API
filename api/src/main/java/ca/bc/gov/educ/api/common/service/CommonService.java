@@ -278,7 +278,7 @@ public class CommonService {
 
 	public List<StudentNote> getAllStudentNotes(String pen) {
 		List<StudentNote> responseList = studentNoteTransformer.transformToDTO(studentNoteRepository.findByPen(pen));
-		Collections.sort(responseList, Comparator.comparing(StudentNote::getUpdatedTimestamp));
+		Collections.sort(responseList, Comparator.comparing(StudentNote::getUpdatedTimestamp).reversed());
 		return responseList;
 	}
 
