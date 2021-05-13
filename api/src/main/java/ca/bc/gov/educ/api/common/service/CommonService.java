@@ -3,7 +3,6 @@ package ca.bc.gov.educ.api.common.service;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -108,60 +107,42 @@ public class CommonService {
     @Autowired
     RestTemplate restTemplate;
 
-    private static Logger logger = LoggerFactory.getLogger(CommonService.class);
+    @SuppressWarnings("unused")
+	private static Logger logger = LoggerFactory.getLogger(CommonService.class);
 
     @Transactional
     public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(String pen, String accessToken) {
-	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = new ArrayList<GradStudentUngradReasons>();
-	        try {
-	        	gradStudentUngradReasonsList = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByPen(pen));  
-	        	gradStudentUngradReasonsList.forEach(sC -> {
-	        		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
-	        		if(ungradReasonObj != null) {
-	        			sC.setUngradReasonName(ungradReasonObj.getDescription());
-	        		}
-	        	});
-	        } catch (Exception e) {
-	            logger.debug("Exception:" + e);
-	        }
-
+	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByPen(pen));  
+        	gradStudentUngradReasonsList.forEach(sC -> {
+        		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
+        		if(ungradReasonObj != null) {
+        			sC.setUngradReasonName(ungradReasonObj.getDescription());
+        		}
+        	});
 	        return gradStudentUngradReasonsList;
 	    }
 
     @Transactional
   	public List<GradStudentCareerProgram> getAllGradStudentCareerProgramList(String pen, String accessToken) {
-  		List<GradStudentCareerProgram> gradStudentCareerProgramList  = new ArrayList<GradStudentCareerProgram>();
-  		try {
-          	gradStudentCareerProgramList = gradStudentCareerProgramTransformer.transformToDTO(gradStudentCareerProgramRepository.findByPen(pen)); 
-          	gradStudentCareerProgramList.forEach(sC -> {
-          		GradCareerProgram gradCareerProgram= webClient.get().uri(String.format(getCareerProgramByCodeURL,sC.getCareerProgramCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCareerProgram.class).block();
-        		if(gradCareerProgram != null) {
-        			sC.setCareerProgramName(gradCareerProgram.getDescription());
-        		}
-        	});
-          } catch (Exception e) {
-              logger.debug("Exception:" + e);
-          }
-
-          return gradStudentCareerProgramList;
+  		 
+		List<GradStudentCareerProgram> gradStudentCareerProgramList  = gradStudentCareerProgramTransformer.transformToDTO(gradStudentCareerProgramRepository.findByPen(pen)); 
+      	gradStudentCareerProgramList.forEach(sC -> {
+      		GradCareerProgram gradCareerProgram= webClient.get().uri(String.format(getCareerProgramByCodeURL,sC.getCareerProgramCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCareerProgram.class).block();
+    		if(gradCareerProgram != null) {
+    			sC.setCareerProgramName(gradCareerProgram.getDescription());
+    		}
+    	});
+      	return gradStudentCareerProgramList;
   	}
 
     public boolean getStudentUngradReasons(String reasonCode) {
 		List<GradStudentUngradReasonsEntity> gradList = gradStudentUngradReasonsRepository.existsByReasonCode(reasonCode);
-		if(gradList.size() > 0) {
-			return true;
-		}else {
-			return false;
-		}
+		return !gradList.isEmpty();
 	}
 
 	public boolean getStudentCareerProgram(String cpCode) {
 		List<GradStudentCareerProgramEntity> gradList = gradStudentCareerProgramRepository.existsByCareerProgramCode(cpCode);
-		if(gradList.size() > 0) {
-			return true;
-		}else {
-			return false;
-		}
+		return !gradList.isEmpty();
 	}
 
 	public GradStudentReports saveGradReports(GradStudentReports gradStudentReports) {
@@ -180,9 +161,8 @@ public class CommonService {
 	
 	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
 		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen,reportType));
-		if(studentReport != null) {			
-			if(studentReport.getReport() != null) {
-				byte[] reportByte = Base64.decodeBase64(new String(studentReport.getReport()).getBytes(StandardCharsets.US_ASCII));
+		if(studentReport != null && studentReport.getReport() != null) {
+				byte[] reportByte = Base64.decodeBase64(studentReport.getReport().getBytes(StandardCharsets.US_ASCII));
 				ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
 			    HttpHeaders headers = new HttpHeaders();
 		        headers.add("Content-Disposition", "inline; filename=student_"+reportType+"_report.pdf");
@@ -190,28 +170,19 @@ public class CommonService {
 		                .ok()
 		                .headers(headers)
 		                .contentType(MediaType.APPLICATION_PDF)
-		                .body(new InputStreamResource(bis));
-			}			
+		                .body(new InputStreamResource(bis));			
 		}
 		return null;
 	}
 
 	public boolean getStudentCertificate(String certificateType) {
 		List<GradStudentCertificatesEntity> gradList = gradStudentCertificatesRepository.existsByCertificateTypeCode(certificateType);
-		if(gradList.size() > 0) {
-			return true;
-		}else {
-			return false;
-		}
+		return !gradList.isEmpty();
 	}
 
 	public boolean getStudentReport(String reasonType) {
 		List<GradStudentReportsEntity> gradList = gradStudentReportsRepository.existsByReportTypeCode(reasonType);
-		if(gradList.size() > 0) {
-			return true;
-		}else {
-			return false;
-		}
+		return !gradList.isEmpty();
 	}
 
 	public GradStudentCertificates saveGradCertificates(GradStudentCertificates gradStudentCertificates) {
@@ -230,9 +201,8 @@ public class CommonService {
 
 	public ResponseEntity<InputStreamResource> getStudentCertificateByType(String pen, String certificateType) {
 		GradStudentCertificates studentCertificate = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen,certificateType));
-		if(studentCertificate != null) {
-			if(studentCertificate.getCertificate() != null) {
-				byte[] certificateByte = Base64.decodeBase64(new String(studentCertificate.getCertificate()).getBytes(StandardCharsets.US_ASCII));
+		if(studentCertificate != null && studentCertificate.getCertificate() != null) {
+				byte[] certificateByte = Base64.decodeBase64(studentCertificate.getCertificate().getBytes(StandardCharsets.US_ASCII));
 				ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
 			    HttpHeaders headers = new HttpHeaders();
 		        headers.add("Content-Disposition", "inline; filename=student_"+certificateType+"_certificate.pdf");
@@ -241,26 +211,20 @@ public class CommonService {
 		                .headers(headers)
 		                .contentType(MediaType.APPLICATION_PDF)
 		                .body(new InputStreamResource(bis));
-			}
 		}
 		return null;
 	}
 
 	public List<GradStudentCertificates> getAllStudentCertificateList(String pen,String accessToken) {
-		List<GradStudentCertificates> gradStudentCertificatesList  = new ArrayList<GradStudentCertificates>();
-		try {
- 			gradStudentCertificatesList = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
- 			gradStudentCertificatesList.forEach(sC -> {
-	 			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
-	       		if(gradCertificateTypes != null) {
-	       			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
-	       		}
-	       	});
-         } catch (Exception e) {
-             logger.debug("Exception:" + e);
-         }
-
-         return gradStudentCertificatesList;
+		 
+		List<GradStudentCertificates> gradStudentCertificatesList  = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
+		gradStudentCertificatesList.forEach(sC -> {
+ 			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
+       		if(gradCertificateTypes != null) {
+       			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
+       		}
+       	});
+        return gradStudentCertificatesList;
 	}
 
 	public List<GradAlgorithmRules> getAlgorithmRulesList(String programCode) {
@@ -299,14 +263,14 @@ public class CommonService {
 				if(studentNote.getStudentID() != null) {
 					toBeSaved.setStudentID(UUID.fromString(studentNote.getStudentID()));
 				}
-				return studentNoteTransformer.transformToDTO(studentNoteRepository.save(toBeSaved));
 			}
 		}else {
 			if(studentNote.getStudentID() != null) {
 				toBeSaved.setStudentID(UUID.fromString(studentNote.getStudentID()));
 			}
-			return studentNoteTransformer.transformToDTO(studentNoteRepository.save(toBeSaved));
+			
 		}
+		return studentNoteTransformer.transformToDTO(studentNoteRepository.save(toBeSaved));
 	}
 
 	public int deleteNote(UUID noteID) {
