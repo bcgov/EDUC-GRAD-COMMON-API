@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ import ca.bc.gov.educ.api.common.repository.GradStudentReportsRepository;
 import ca.bc.gov.educ.api.common.repository.GradStudentUngradReasonsRepository;
 import ca.bc.gov.educ.api.common.repository.StudentNoteRepository;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
+import ca.bc.gov.educ.api.common.util.GradValidation;
 
 
 @Service
@@ -106,13 +108,16 @@ public class CommonService {
     
     @Autowired
     RestTemplate restTemplate;
+    
+    @Autowired
+	GradValidation validation;
 
     @SuppressWarnings("unused")
 	private static Logger logger = LoggerFactory.getLogger(CommonService.class);
 
     @Transactional
-    public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(String pen, String accessToken) {
-	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByPen(pen));  
+    public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(UUID studentID, String accessToken) {
+	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByStudentID(studentID));  
         	gradStudentUngradReasonsList.forEach(sC -> {
         		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
         		if(ungradReasonObj != null) {
@@ -280,6 +285,27 @@ public class CommonService {
 			return 1;
 		}else {
 			return 0;
+		}
+	}
+
+	public GradStudentUngradReasons createGradStudentUngradReasons(@Valid GradStudentUngradReasons gradStudentUngradReasons,String accessToken) {
+		GradStudentUngradReasonsEntity toBeSavedObject = gradStudentUngradReasonsTransformer.transformToEntity(gradStudentUngradReasons);
+		if(gradStudentUngradReasons.getId() != null) {
+			Optional<GradStudentUngradReasonsEntity> existingObjectCheck = gradStudentUngradReasonsRepository.findById(gradStudentUngradReasons.getId());
+			if(existingObjectCheck.isPresent()) {
+				validation.addErrorAndStop("Cannot update an existing student ungrad reason");
+				return gradStudentUngradReasons;			
+			}
+			return null;
+		}else {
+			GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,gradStudentUngradReasons.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
+    		if(ungradReasonObj != null) {
+    			return gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.save(toBeSavedObject));
+    		}else {
+    			validation.addErrorAndStop(String.format("Invalid Ungrad Reason Code [%s]",gradStudentUngradReasons.getUngradReasonCode()));
+    			return gradStudentUngradReasons;
+    		}
+				
 		}
 	}
 }
