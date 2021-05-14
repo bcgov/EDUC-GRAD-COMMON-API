@@ -16,4 +16,6 @@ public interface GradStudentUngradReasonsRepository extends JpaRepository<GradSt
 
 	@Query("select c from GradStudentUngradReasonsEntity c where c.ungradReasonCode=:reasonCode")
 	List<GradStudentUngradReasonsEntity> existsByReasonCode(String reasonCode);
+
+	List<GradStudentUngradReasonsEntity> findByStudentID(UUID studentID);
 }

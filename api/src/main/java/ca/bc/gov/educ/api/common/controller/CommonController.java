@@ -64,13 +64,30 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_UNGRAD_MAPPING)
     @PreAuthorize(PermissionsContants.READ_GRAD_STUDENT_UNGRAD_REASONS_DATA)
-    @Operation(summary = "Find Student Ungrad Reasons by Pen", description = "Get Student Ungrad Reasons By Pen", tags = { "Ungrad Reasons" })
+    @Operation(summary = "Find Student Ungrad Reasons by Student ID", description = "Get Student Ungrad Reasons By Student ID", tags = { "Ungrad Reasons" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<List<GradStudentUngradReasons>> getAllStudentUngradReasonsList(@PathVariable String pen) { 
+    public ResponseEntity<List<GradStudentUngradReasons>> getAllStudentUngradReasonsList(@PathVariable String studentID) { 
     	logger.debug("getAllStudentUngradReasonsList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return response.GET(commonService.getAllStudentUngradReasonsList(pen,accessToken));
+        return response.GET(commonService.getAllStudentUngradReasonsList(UUID.fromString(studentID),accessToken));
+    }
+    
+    @PostMapping(EducGradCommonApiConstants.GET_ALL_STUDENT_UNGRAD_MAPPING)
+    @PreAuthorize(PermissionsContants.CREATE_GRAD_STUDENT_UNGRAD_REASONS_DATA)
+    @Operation(summary = "Create an Ungrad Reasons", description = "Create an Ungrad Reasons", tags = { "Ungrad Reasons" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    public ResponseEntity<ApiResponseModel<GradStudentUngradReasons>> createGradStudentUngradReason(@PathVariable String studentID,@Valid @RequestBody GradStudentUngradReasons gradStudentUngradReasons) { 
+    	logger.debug("createGradUngradReasons : ");
+    	validation.requiredField(gradStudentUngradReasons.getStudentID(), "Student ID");
+    	validation.requiredField(gradStudentUngradReasons.getUngradReasonCode(), "Ungrad Reason Code");
+    	if(validation.hasErrors()) {
+    		validation.stopOnErrors();
+    		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    	}
+    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
+    	String accessToken = auth.getTokenValue();
+        return response.CREATED(commonService.createGradStudentUngradReasons(gradStudentUngradReasons,accessToken));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_STUDENT_UNGRAD_BY_REASON_CODE_MAPPING)
