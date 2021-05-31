@@ -2,8 +2,10 @@ package ca.bc.gov.educ.api.common.controller;
 
 
 import ca.bc.gov.educ.api.common.model.dto.*;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.service.CommonService;
 import ca.bc.gov.educ.api.common.util.ResponseHelper;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -12,11 +14,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,12 +90,20 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentUngradReasons() {
-        // TODO (jsung)
+        String reasonCode = "TEST";
+
+        Mockito.when(commonService.getStudentUngradReasons(reasonCode)).thenReturn(true);
+        commonController.getStudentUngradReasons(reasonCode);
+        Mockito.verify(commonService).getStudentUngradReasons(reasonCode);
     }
 
     @Test
     public void testGetStudentCareerProgram() {
-        // TODO (jsung)
+       String programCode = "2018-EN";
+
+       Mockito.when(commonService.getStudentCareerProgram(programCode)).thenReturn(true);
+       commonController.getStudentCareerProgram(programCode);
+       Mockito.verify(commonService).getStudentCareerProgram(programCode);
     }
 
     @Test
@@ -131,7 +147,11 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentCertificate() {
-        // TODO (jsung)
+        String certificateTypeCode = "TEST";
+
+        Mockito.when(commonService.getStudentCertificate(certificateTypeCode)).thenReturn(true);
+        commonController.getStudentCertificate(certificateTypeCode);
+        Mockito.verify(commonService).getStudentCertificate(certificateTypeCode);
     }
 
     @Test
@@ -156,7 +176,23 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentCertificateByType() {
-        // TODO (jsung)
+        String pen = "123456789";
+        String certificateTypeCode = "TEST";
+        String certificateBody = "Test Certificate Body";
+
+        byte[] certificateByte = Base64.decodeBase64(certificateBody.getBytes(StandardCharsets.US_ASCII));
+        ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=student_"+certificateTypeCode+"_certificate.pdf");
+
+        Mockito.when(commonService.getStudentCertificateByType(pen, certificateTypeCode)).thenReturn(
+                ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis)));
+        commonController.getStudentCertificateByType(pen, certificateTypeCode);
+        Mockito.verify(commonService).getStudentCertificateByType(pen, certificateTypeCode);
     }
 
     @Test
