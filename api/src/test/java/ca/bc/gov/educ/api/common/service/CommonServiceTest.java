@@ -1,6 +1,9 @@
 package ca.bc.gov.educ.api.common.service;
 
 import ca.bc.gov.educ.api.common.model.dto.*;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
+import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.model.transformer.*;
 import ca.bc.gov.educ.api.common.repository.*;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
@@ -156,12 +159,50 @@ public class CommonServiceTest {
 
     @Test
     public void testGetStudentUngradReasons() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        // Ungrad Reasons
+        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        gradUngradReason.setCode("TEST");
+        gradUngradReason.setDescription("Test Code Name");
+
+        // Student Ungrad Reasons Data
+        List<GradStudentUngradReasonsEntity> gradStudentUngradReasonsList = new ArrayList<>();
+        GradStudentUngradReasonsEntity studentUngradReason = new GradStudentUngradReasonsEntity();
+        studentUngradReason.setId(UUID.randomUUID());
+        studentUngradReason.setPen("123456789");
+        studentUngradReason.setStudentID(studentID);
+        studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
+        gradStudentUngradReasonsList.add(studentUngradReason);
+
+        when(gradStudentUngradReasonsRepository.existsByReasonCode(gradUngradReason.getCode())).thenReturn(gradStudentUngradReasonsList);
+        var result = commonService.getStudentUngradReasons(gradUngradReason.getCode());
+        assertThat(result).isTrue();
+
     }
 
     @Test
     public void testGetStudentCareerProgram() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Career Program
+        GradCareerProgram gradCareerProgram = new GradCareerProgram();
+        gradCareerProgram.setCode("TEST");
+        gradCareerProgram.setDescription("Test Code Name");
+
+        // Student Career Program Data
+        List<GradStudentCareerProgramEntity> gradStudentCareerProgramList = new ArrayList<>();
+        GradStudentCareerProgramEntity studentCareerProgram = new GradStudentCareerProgramEntity();
+        studentCareerProgram.setId(UUID.randomUUID());
+        studentCareerProgram.setPen(pen);
+        studentCareerProgram.setStudentID(studentID);
+        studentCareerProgram.setCareerProgramCode(gradCareerProgram.getCode());
+        gradStudentCareerProgramList.add(studentCareerProgram);
+
+        when(gradStudentCareerProgramRepository.existsByCareerProgramCode(gradCareerProgram.getCode())).thenReturn(gradStudentCareerProgramList);
+        var result = commonService.getStudentCareerProgram(gradCareerProgram.getCode());
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -212,7 +253,26 @@ public class CommonServiceTest {
 
     @Test
     public void testGetStudentCertificate() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Certificate Type
+        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        gradCertificateType.setCode("TEST");
+        gradCertificateType.setDescription("Test Code Name");
+
+        // Student Certificate Types
+        List<GradStudentCertificatesEntity> gradStudentCertificatesList = new ArrayList<>();
+        GradStudentCertificatesEntity studentCertificate = new GradStudentCertificatesEntity();
+        studentCertificate.setId(UUID.randomUUID());
+        studentCertificate.setPen(pen);
+        studentCertificate.setStudentID(studentID);
+        studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
+        gradStudentCertificatesList.add(studentCertificate);
+
+        when(gradStudentCertificatesRepository.existsByCertificateTypeCode(gradCertificateType.getCode())).thenReturn(gradStudentCertificatesList);
+        var result = commonService.getStudentCertificate(gradCertificateType.getCode());
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -237,7 +297,27 @@ public class CommonServiceTest {
 
     @Test
     public void testGetStudentCertificateByType() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Certificate Type
+        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        gradCertificateType.setCode("TEST");
+        gradCertificateType.setDescription("Test Code Name");
+
+        // Student Certificate Types
+        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        studentCertificate.setId(UUID.randomUUID());
+        studentCertificate.setPen(pen);
+        studentCertificate.setStudentID(studentID);
+        studentCertificate.setCertificate("TEST Certificate Body");
+        studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        when(gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode()))).thenReturn(studentCertificate);
+        var result = commonService.getStudentCertificateByType(pen, gradCertificateType.getCode());
+        assertThat(result).isNotNull();
+        assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_certificate.pdf]");
+        assertThat(result.getBody()).isNotNull();
     }
 
     @Test
