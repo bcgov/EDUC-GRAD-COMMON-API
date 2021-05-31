@@ -16,7 +16,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -92,16 +91,10 @@ public class CommonService {
     private StudentNoteTransformer  studentNoteTransformer;
     
     @Autowired
-    private StudentNoteRepository studentNoteRepository; 
-    
-    @Value(EducGradCommonApiConstants.ENDPOINT_UNGRAD_REASON_BY_CODE_URL)
-    private String getUngradReasonByCodeURL;
-    
-    @Value(EducGradCommonApiConstants.ENDPOINT_CAREER_PROGRAM_BY_CODE_URL)
-    private String getCareerProgramByCodeURL;
-    
-    @Value(EducGradCommonApiConstants.ENDPOINT_CERTIFICATE_BY_CODE_URL)
-    private String getCertificateByCodeURL;
+    private StudentNoteRepository studentNoteRepository;
+
+    @Autowired
+	private EducGradCommonApiConstants constants;
     
     @Autowired
     WebClient webClient;
@@ -119,7 +112,7 @@ public class CommonService {
     public List<GradStudentUngradReasons> getAllStudentUngradReasonsList(UUID studentID, String accessToken) {
 	        List<GradStudentUngradReasons> gradStudentUngradReasonsList  = gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByStudentID(studentID));  
         	gradStudentUngradReasonsList.forEach(sC -> {
-        		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
+        		GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(constants.getUngradReasonByCodeUrl(),sC.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
         		if(ungradReasonObj != null) {
         			sC.setUngradReasonName(ungradReasonObj.getDescription());
         		}
@@ -132,7 +125,7 @@ public class CommonService {
   		 
 		List<GradStudentCareerProgram> gradStudentCareerProgramList  = gradStudentCareerProgramTransformer.transformToDTO(gradStudentCareerProgramRepository.findByPen(pen)); 
       	gradStudentCareerProgramList.forEach(sC -> {
-      		GradCareerProgram gradCareerProgram= webClient.get().uri(String.format(getCareerProgramByCodeURL,sC.getCareerProgramCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCareerProgram.class).block();
+      		GradCareerProgram gradCareerProgram= webClient.get().uri(String.format(constants.getCareerProgramByCodeUrl(),sC.getCareerProgramCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCareerProgram.class).block();
     		if(gradCareerProgram != null) {
     			sC.setCareerProgramName(gradCareerProgram.getDescription());
     		}
@@ -224,7 +217,7 @@ public class CommonService {
 		 
 		List<GradStudentCertificates> gradStudentCertificatesList  = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
 		gradStudentCertificatesList.forEach(sC -> {
- 			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(getCertificateByCodeURL,sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
+ 			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(constants.getCertificateByCodeUrl(),sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
        		if(gradCertificateTypes != null) {
        			sC.setGradCertificateTypeDesc(gradCertificateTypes.getDescription());
        		}
@@ -298,7 +291,7 @@ public class CommonService {
 			}
 			return null;
 		}else {
-			GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(getUngradReasonByCodeURL,gradStudentUngradReasons.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
+			GradUngradReasons ungradReasonObj = webClient.get().uri(String.format(constants.getUngradReasonByCodeUrl(),gradStudentUngradReasons.getUngradReasonCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradUngradReasons.class).block();
     		if(ungradReasonObj != null) {
     			return gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.save(toBeSavedObject));
     		}else {
