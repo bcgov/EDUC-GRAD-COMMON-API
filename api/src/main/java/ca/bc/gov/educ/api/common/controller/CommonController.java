@@ -125,7 +125,7 @@ public class CommonController {
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
     @Operation(summary = "Check if Certificate type is valid", description = "Check if Certificate Type is valid", tags = { "Certificates" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<Boolean> getStudentCertifcate(@PathVariable String certificateTypeCode) { 
+    public ResponseEntity<Boolean> getStudentCertificate(@PathVariable String certificateTypeCode) {
     	logger.debug("getStudentCertifcate : ");
         return response.GET(commonService.getStudentCertificate(certificateTypeCode));
     }

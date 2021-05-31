@@ -1,7 +1,15 @@
 package ca.bc.gov.educ.api.common.util;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Component
+@Getter
+@Setter
 public class EducGradCommonApiConstants {
 
     //API end-point Mapping constants
@@ -38,8 +46,13 @@ public class EducGradCommonApiConstants {
     public static final String DEFAULT_DATE_FORMAT = "dd-MMM-yyyy";
     
     public static final String TRAX_DATE_FORMAT = "yyyyMM";
-	public static final String ENDPOINT_UNGRAD_REASON_BY_CODE_URL = "${endpoint.code-api.ungrad_reason.ungrad_reasons-by-ungrad-code.url}";
-	public static final String ENDPOINT_CAREER_PROGRAM_BY_CODE_URL = "${endpoint.code-api.career_program.career_program-by-career-code.url}";
-	public static final String ENDPOINT_CERTIFICATE_BY_CODE_URL = "${endpoint.code-api.certificate_type.certificate-by-code.url}";
+
+    // Endpoints
+	@Value("${endpoint.code-api.ungrad_reason.ungrad_reasons-by-ungrad-code.url}")
+	private String ungradReasonByCodeUrl;
+    @Value("${endpoint.code-api.career_program.career_program-by-career-code.url}")
+	private String careerProgramByCodeUrl;
+    @Value("${endpoint.code-api.certificate_type.certificate-by-code.url}")
+	private String certificateByCodeUrl;
 	
 }
