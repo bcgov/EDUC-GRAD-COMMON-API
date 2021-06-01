@@ -4,6 +4,7 @@ package ca.bc.gov.educ.api.common.controller;
 import ca.bc.gov.educ.api.common.model.dto.*;
 import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.service.CommonService;
+import ca.bc.gov.educ.api.common.util.GradValidation;
 import ca.bc.gov.educ.api.common.util.ResponseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,13 +42,16 @@ public class CommonControllerTest {
     @Mock
     ResponseHelper responseHelper;
 
+    @Mock
+    GradValidation validation;
+
     @InjectMocks
     private CommonController commonController;
 
 
     @Test
     public void testGetAllStudentUngradReasonsList() {
-// UUID
+        // UUID
         UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
         GradUngradReasons gradUngradReason = new GradUngradReasons();
@@ -85,7 +90,30 @@ public class CommonControllerTest {
 
     @Test
     public void testCreateGradStudentUngradReason() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        // Ungrad Reasons
+        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        gradUngradReason.setCode("TEST");
+        gradUngradReason.setDescription("Test Code Name");
+
+        // Student Ungrad Reasons
+        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        studentUngradReason.setPen("123456789");
+        studentUngradReason.setStudentID(studentID);
+        studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        OAuth2AuthenticationDetails details = Mockito.mock(OAuth2AuthenticationDetails.class);
+        // Mockito.whens() for your authorization object
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(authentication.getDetails()).thenReturn(details);
+        SecurityContextHolder.setContext(securityContext);
+
+        Mockito.when(commonService.createGradStudentUngradReasons(studentUngradReason, null)).thenReturn(studentUngradReason);
+        commonController.createGradStudentUngradReason(studentID.toString(), studentUngradReason);
+        Mockito.verify(commonService).createGradStudentUngradReasons(studentUngradReason, null);
     }
 
     @Test
@@ -156,22 +184,73 @@ public class CommonControllerTest {
 
     @Test
     public void testSaveStudentCertificate() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Certificate Type
+        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        gradCertificateType.setCode("TEST");
+        gradCertificateType.setDescription("Test Code Name");
+
+        // Student Certificate Types
+        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        studentCertificate.setPen(pen);
+        studentCertificate.setStudentID(studentID);
+        studentCertificate.setCertificate("Test Certificate Body");
+        studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        Mockito.when(commonService.saveGradCertificates(studentCertificate)).thenReturn(studentCertificate);
+        commonController.saveStudentCertificate(studentCertificate);
+        Mockito.verify(commonService).saveGradCertificates(studentCertificate);
     }
 
     @Test
     public void testGetStudentReport() {
-        // TODO (jsung)
+        String reportTypeCode = "TEST";
+        Mockito.when(commonService.getStudentReport(reportTypeCode)).thenReturn(Boolean.TRUE);
+        commonController.getStudentReport(reportTypeCode);
+        Mockito.verify(commonService).getStudentReport(reportTypeCode);
     }
 
     @Test
     public void testSaveStudentReport() {
-        // TODO (jsung)
+        // ID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        String reportTypeCode = "TEST";
+
+        GradStudentReports gradStudentReport = new GradStudentReports();
+        gradStudentReport.setGradReportTypeCode(reportTypeCode);
+        gradStudentReport.setPen(pen);
+        gradStudentReport.setStudentID(studentID);
+        gradStudentReport.setReport("TEST Report Body");
+
+        Mockito.when(commonService.saveGradReports(gradStudentReport)).thenReturn(gradStudentReport);
+        commonController.saveStudentReport(gradStudentReport);
+        Mockito.verify(commonService).saveGradReports(gradStudentReport);
     }
 
     @Test
     public void testGetStudentReportByType() {
-        // TODO (jsung)
+        // ID
+        String pen = "123456789";
+        String reportTypeCode = "TEST";
+        String reportBody = "Test Report Body";
+
+        byte[] certificateByte = Base64.decodeBase64(reportBody.getBytes(StandardCharsets.US_ASCII));
+        ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=student_"+reportTypeCode+"_report.pdf");
+
+        Mockito.when(commonService.getStudentReportByType(pen, reportTypeCode)).thenReturn(
+                ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(new InputStreamResource(bis)));
+        commonController.getStudentReportByType(pen, reportTypeCode);
+        Mockito.verify(commonService).getStudentReportByType(pen, reportTypeCode);
+
     }
 
     @Test
@@ -325,12 +404,30 @@ public class CommonControllerTest {
 
     @Test
     public void testSaveStudentNotes() {
-        // TODO (jsung)
+        // ID
+        UUID noteID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+
+        StudentNote studentNote = new StudentNote();
+        studentNote.setId(noteID);
+        studentNote.setStudentID(studentID.toString());
+        studentNote.setPen(pen);
+        studentNote.setNote("Test Note Body");
+
+        Mockito.when(commonService.saveStudentNote(studentNote)).thenReturn(studentNote);
+        commonController.saveStudentNotes(studentNote);
+        Mockito.verify(commonService).saveStudentNote(studentNote);
     }
 
     @Test
     public void testDeleteNotes() {
-        // TODO (jsung)
+        // ID
+        UUID noteID = UUID.randomUUID();
+
+        Mockito.when(commonService.deleteNote(noteID)).thenReturn(1);
+        commonController.deleteNotes(noteID.toString());
+        Mockito.verify(commonService).deleteNote(noteID);
     }
 
 

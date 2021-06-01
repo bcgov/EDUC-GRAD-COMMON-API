@@ -178,8 +178,8 @@ public class CommonService {
 		return !gradList.isEmpty();
 	}
 
-	public boolean getStudentReport(String reasonType) {
-		List<GradStudentReportsEntity> gradList = gradStudentReportsRepository.existsByReportTypeCode(reasonType);
+	public boolean getStudentReport(String reportType) {
+		List<GradStudentReportsEntity> gradList = gradStudentReportsRepository.existsByReportTypeCode(reportType);
 		return !gradList.isEmpty();
 	}
 
