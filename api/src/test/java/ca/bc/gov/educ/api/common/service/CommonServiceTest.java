@@ -1,18 +1,18 @@
 package ca.bc.gov.educ.api.common.service;
 
 import ca.bc.gov.educ.api.common.model.dto.*;
-import ca.bc.gov.educ.api.common.model.entity.GradStudentCareerProgramEntity;
-import ca.bc.gov.educ.api.common.model.entity.GradStudentCertificatesEntity;
-import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
+import ca.bc.gov.educ.api.common.model.entity.*;
 import ca.bc.gov.educ.api.common.model.transformer.*;
 import ca.bc.gov.educ.api.common.repository.*;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 
+import ca.bc.gov.educ.api.common.util.GradBusinessRuleException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,12 @@ import reactor.core.publisher.Mono;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -154,7 +156,75 @@ public class CommonServiceTest {
 
     @Test
     public void testCreateGradStudentUngradReason() {
-        // TODO (jsung)
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        // Ungrad Reasons
+        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        gradUngradReason.setCode("TEST");
+        gradUngradReason.setDescription("Test Code Name");
+
+        // Student Ungrad Reasons
+        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        studentUngradReason.setPen("123456789");
+        studentUngradReason.setStudentID(studentID);
+        studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
+
+        // Student Ungrad Reasons Entity
+        GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
+        studentUngradReasonEntity.setPen("123456789");
+        studentUngradReasonEntity.setStudentID(studentID);
+        studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
+
+        when(this.gradStudentUngradReasonsTransformer.transformToEntity(studentUngradReason)).thenReturn(studentUngradReasonEntity);
+
+        when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
+        when(this.requestHeadersUriMock.uri(String.format(constants.getUngradReasonByCodeUrl(),gradUngradReason.getCode()))).thenReturn(this.requestHeadersMock);
+        when(this.requestHeadersMock.headers(any(Consumer.class))).thenReturn(this.requestHeadersMock);
+        when(this.requestHeadersMock.retrieve()).thenReturn(this.responseMock);
+        when(this.responseMock.bodyToMono(GradUngradReasons.class)).thenReturn(Mono.just(gradUngradReason));
+
+        when(this.gradStudentUngradReasonsTransformer.transformToDTO(this.gradStudentUngradReasonsRepository.save(studentUngradReasonEntity))).thenReturn(studentUngradReason);
+
+        var result = commonService.createGradStudentUngradReasons(studentUngradReason, "accessToken");
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void testCreateGradStudentUngradReasonWithExistingEntity_thenReturnBusinessException() {
+        // UUID
+        UUID ungradReasonID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        // Ungrad Reasons
+        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        gradUngradReason.setCode("TEST");
+        gradUngradReason.setDescription("Test Code Name");
+
+        // Student Ungrad Reasons
+        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        studentUngradReason.setId(ungradReasonID);
+        studentUngradReason.setPen("123456789");
+        studentUngradReason.setStudentID(studentID);
+        studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
+
+        // Student Ungrad Reasons Entity
+        GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
+        studentUngradReasonEntity.setId(ungradReasonID);
+        studentUngradReasonEntity.setPen("123456789");
+        studentUngradReasonEntity.setStudentID(studentID);
+        studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
+
+        Optional<GradStudentUngradReasonsEntity> optional = Optional.of(studentUngradReasonEntity);
+
+        when(this.gradStudentUngradReasonsTransformer.transformToEntity(studentUngradReason)).thenReturn(studentUngradReasonEntity);
+        when(this.gradStudentUngradReasonsRepository.findById(ungradReasonID)).thenReturn(optional);
+
+        try {
+            var result = commonService.createGradStudentUngradReasons(studentUngradReason, "accessToken");
+            Assertions.fail("Business Exception should have been thrown!");
+        } catch (GradBusinessRuleException gbre) {
+            assertThat(gbre.getMessage()).isNotNull();
+        }
     }
 
     @Test
@@ -276,23 +346,178 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void testSaveStudentCertificates() {
-        // TODO (jsung)
+    public void testSaveGradStudentCertificates_thenReturnCreateSuccess() {
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Certificate Type
+        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        gradCertificateType.setCode("TEST");
+        gradCertificateType.setDescription("Test Code Name");
+
+        // Student Certificate Types
+        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        studentCertificate.setPen(pen);
+        studentCertificate.setStudentID(studentID);
+        studentCertificate.setCertificate("Test Certificate Body");
+        studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        // Student Certificate Types Entity
+        GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
+        studentCertificateEntity.setPen(pen);
+        studentCertificateEntity.setStudentID(studentID);
+        studentCertificateEntity.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        Optional<GradStudentCertificatesEntity> optionalEmpty = Optional.empty();
+
+        when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
+        when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optionalEmpty);
+        when(this.gradStudentCertificatesTransformer.transformToDTO(this.gradStudentCertificatesRepository.save(studentCertificateEntity))).thenReturn(studentCertificate);
+
+        var result = commonService.saveGradCertificates(studentCertificate);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getGradCertificateTypeCode()).isEqualTo(gradCertificateType.getCode());
+    }
+
+    @Test
+    public void testSaveGradStudentCertificatesWithExistingOne_thenReturnUpdateSuccess() {
+        // UUID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        // Certificate Type
+        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        gradCertificateType.setCode("TEST");
+        gradCertificateType.setDescription("Test Code Name");
+
+        // Student Certificate Types
+        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        studentCertificate.setPen(pen);
+        studentCertificate.setStudentID(studentID);
+        studentCertificate.setCertificate("Test Certificate Body");
+        studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        // Student Certificate Types Entity
+        GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
+        studentCertificateEntity.setPen(pen);
+        studentCertificateEntity.setStudentID(studentID);
+        studentCertificateEntity.setGradCertificateTypeCode(gradCertificateType.getCode());
+
+        Optional<GradStudentCertificatesEntity> optional = Optional.of(studentCertificateEntity);
+
+        when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
+        when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optional);
+        when(this.gradStudentCertificatesTransformer.transformToDTO(this.gradStudentCertificatesRepository.save(studentCertificateEntity))).thenReturn(studentCertificate);
+
+        var result = commonService.saveGradCertificates(studentCertificate);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getGradCertificateTypeCode()).isEqualTo(gradCertificateType.getCode());
     }
 
     @Test
     public void testGetStudentReport() {
-        // TODO (jsung)
+        List<GradStudentReportsEntity> reportList = new ArrayList<>();
+        GradStudentReportsEntity report = new GradStudentReportsEntity();
+        report.setId(UUID.randomUUID());
+        report.setGradReportTypeCode("TEST");
+        report.setPen("123456789");
+        report.setStudentID(UUID.randomUUID());
+        report.setReport("TEST Report Body");
+        reportList.add(report);
+
+        when(this.gradStudentReportsRepository.existsByReportTypeCode("TEST")).thenReturn(reportList);
+        var result = commonService.getStudentReport("TEST");
+        assertThat(result).isTrue();
     }
 
     @Test
-    public void testSaveStudentReports() {
-        // TODO (jsung)
+    public void testSaveGradReports_thenReturnCreateSuccess() {
+        // ID
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        String reportTypeCode = "TEST";
+
+        GradStudentReports gradStudentReport = new GradStudentReports();
+        gradStudentReport.setGradReportTypeCode(reportTypeCode);
+        gradStudentReport.setPen(pen);
+        gradStudentReport.setStudentID(studentID);
+        gradStudentReport.setReport("TEST Report Body");
+
+        GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
+        gradStudentReportEntity.setGradReportTypeCode(reportTypeCode);
+        gradStudentReportEntity.setPen(pen);
+        gradStudentReportEntity.setStudentID(studentID);
+        gradStudentReportEntity.setReport("TEST Report Body");
+
+        Optional<GradStudentReportsEntity> optionalEmpty = Optional.empty();
+
+        when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
+        when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optionalEmpty);
+        when(this.gradStudentReportsTransformer.transformToDTO(this.gradStudentReportsRepository.save(gradStudentReportEntity))).thenReturn(gradStudentReport);
+
+        var result = commonService.saveGradReports(gradStudentReport);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getStudentID()).isEqualTo(studentID);
+        assertThat(result.getGradReportTypeCode()).isEqualTo(gradStudentReport.getGradReportTypeCode());
+    }
+
+    @Test
+    public void testSaveGradReportsWithExistingOne_thenReturnUpdateSuccess() {
+        // ID
+        UUID reportID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        String reportTypeCode = "TEST";
+
+        GradStudentReports gradStudentReport = new GradStudentReports();
+        gradStudentReport.setId(reportID);
+        gradStudentReport.setGradReportTypeCode(reportTypeCode);
+        gradStudentReport.setPen(pen);
+        gradStudentReport.setStudentID(studentID);
+        gradStudentReport.setReport("TEST Report Body");
+
+        GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
+        gradStudentReportEntity.setId(reportID);
+        gradStudentReportEntity.setGradReportTypeCode(reportTypeCode);
+        gradStudentReportEntity.setPen(pen);
+        gradStudentReportEntity.setStudentID(studentID);
+        gradStudentReportEntity.setReport("TEST Report Body");
+
+        Optional<GradStudentReportsEntity> optional = Optional.of(gradStudentReportEntity);
+
+        when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
+        when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optional);
+        when(this.gradStudentReportsTransformer.transformToDTO(this.gradStudentReportsRepository.save(gradStudentReportEntity))).thenReturn(gradStudentReport);
+
+        var result = commonService.saveGradReports(gradStudentReport);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getStudentID()).isEqualTo(studentID);
+        assertThat(result.getGradReportTypeCode()).isEqualTo(gradStudentReport.getGradReportTypeCode());
     }
 
     @Test
     public void testGetStudentReportByType() {
-        // TODO (jsung)
+        // ID
+        UUID reportID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+        String reportTypeCode = "TEST";
+
+        GradStudentReports gradStudentReport = new GradStudentReports();
+        gradStudentReport.setId(reportID);
+        gradStudentReport.setGradReportTypeCode(reportTypeCode);
+        gradStudentReport.setPen(pen);
+        gradStudentReport.setStudentID(studentID);
+        gradStudentReport.setReport("TEST Report Body");
+
+        when(gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode))).thenReturn(gradStudentReport);
+        var result = commonService.getStudentReportByType(pen, reportTypeCode);
+        assertThat(result).isNotNull();
+        assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_report.pdf]");
+        assertThat(result.getBody()).isNotNull();
     }
 
     @Test
@@ -494,14 +719,101 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void testSaveStudentNote() {
-        // TODO (jsung)
+    public void testSaveStudentNote_thenReturnCreateSuccess() {
+        // ID
+        UUID noteID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+
+        StudentNote studentNote = new StudentNote();
+        studentNote.setStudentID(studentID.toString());
+        studentNote.setPen(pen);
+        studentNote.setNote("Test Note Body");
+
+        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        studentNoteEntity.setId(noteID);
+        studentNoteEntity.setStudentID(studentID);
+        studentNoteEntity.setPen(pen);
+        studentNoteEntity.setNote("Test Note Body");
+
+        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+
+        when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
+        when(this.studentNoteTransformer.transformToDTO(this.studentNoteRepository.save(studentNoteEntity))).thenReturn(studentNote);
+
+        var result = commonService.saveStudentNote(studentNote);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getStudentID()).isEqualTo(studentID.toString());
+        assertThat(result.getNote()).isEqualTo(studentNote.getNote());
+    }
+
+    @Test
+    public void testSaveStudentNoteWithExistingOne_thenReturnUpdateSuccess() {
+        // ID
+        UUID noteID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+
+        StudentNote studentNote = new StudentNote();
+        studentNote.setId(noteID);
+        studentNote.setStudentID(studentID.toString());
+        studentNote.setPen(pen);
+        studentNote.setNote("Test Note Body");
+
+        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        studentNoteEntity.setId(noteID);
+        studentNoteEntity.setStudentID(studentID);
+        studentNoteEntity.setPen(pen);
+        studentNoteEntity.setNote("Test Note Body");
+
+        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+
+        when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
+        when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
+        when(this.studentNoteTransformer.transformToDTO(this.studentNoteRepository.save(studentNoteEntity))).thenReturn(studentNote);
+
+        var result = commonService.saveStudentNote(studentNote);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(noteID);
+        assertThat(result.getStudentID()).isEqualTo(studentID.toString());
+        assertThat(result.getNote()).isEqualTo(studentNote.getNote());
     }
 
     @Test
     public void testDeleteNote() {
-        // TODO (jsung)
+        // ID
+        UUID noteID = UUID.randomUUID();
+        UUID studentID = UUID.randomUUID();
+        String pen = "123456789";
+
+        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        studentNoteEntity.setId(noteID);
+        studentNoteEntity.setStudentID(studentID);
+        studentNoteEntity.setPen(pen);
+        studentNoteEntity.setNote("Test Note Body");
+
+        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+
+        when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
+
+        var result = commonService.deleteNote(noteID);
+
+        assertThat(result).isEqualTo(1);
+
     }
 
+    @Test
+    public void testDeleteNoteWhenGivenNoteIdDoesNotExist() {
+        UUID noteID = UUID.randomUUID();
+        Optional<StudentNoteEntity> optional = Optional.empty();
 
+        when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
+
+        var result = commonService.deleteNote(noteID);
+
+        assertThat(result).isEqualTo(0);
+
+    }
 }
