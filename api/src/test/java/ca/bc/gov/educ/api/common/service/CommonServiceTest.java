@@ -32,7 +32,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -112,22 +111,22 @@ public class CommonServiceTest {
     @Test
     public void testGetAllStudentUngradReasonsList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons Data
-        List<GradStudentUngradReasons> gradStudentUngradReasonsList = new ArrayList<>();
-        GradStudentUngradReasons studentUngradReason1 = new GradStudentUngradReasons();
+        final List<GradStudentUngradReasons> gradStudentUngradReasonsList = new ArrayList<>();
+        final GradStudentUngradReasons studentUngradReason1 = new GradStudentUngradReasons();
         studentUngradReason1.setId(UUID.randomUUID());
         studentUngradReason1.setPen("123456789");
         studentUngradReason1.setStudentID(studentID);
         studentUngradReason1.setUngradReasonCode(gradUngradReason.getCode());
         gradStudentUngradReasonsList.add(studentUngradReason1);
 
-        GradStudentUngradReasons studentUngradReason2 = new GradStudentUngradReasons();
+        final GradStudentUngradReasons studentUngradReason2 = new GradStudentUngradReasons();
         studentUngradReason2.setId(UUID.randomUUID());
         studentUngradReason2.setPen("123456789");
         studentUngradReason2.setStudentID(studentID);
@@ -157,20 +156,20 @@ public class CommonServiceTest {
     @Test
     public void testCreateGradStudentUngradReason() {
         // UUID
-        UUID studentID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons
-        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        final GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
         studentUngradReason.setPen("123456789");
         studentUngradReason.setStudentID(studentID);
         studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
 
         // Student Ungrad Reasons Entity
-        GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
+        final GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
         studentUngradReasonEntity.setPen("123456789");
         studentUngradReasonEntity.setStudentID(studentID);
         studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
@@ -193,28 +192,28 @@ public class CommonServiceTest {
     @Test
     public void testCreateGradStudentUngradReasonWithExistingEntity_thenReturnBusinessException() {
         // UUID
-        UUID ungradReasonID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
+        final UUID ungradReasonID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons
-        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        final  GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
         studentUngradReason.setId(ungradReasonID);
         studentUngradReason.setPen("123456789");
         studentUngradReason.setStudentID(studentID);
         studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
 
         // Student Ungrad Reasons Entity
-        GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
+        final GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
         studentUngradReasonEntity.setId(ungradReasonID);
         studentUngradReasonEntity.setPen("123456789");
         studentUngradReasonEntity.setStudentID(studentID);
         studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
 
-        Optional<GradStudentUngradReasonsEntity> optional = Optional.of(studentUngradReasonEntity);
+        final Optional<GradStudentUngradReasonsEntity> optional = Optional.of(studentUngradReasonEntity);
 
         when(this.gradStudentUngradReasonsTransformer.transformToEntity(studentUngradReason)).thenReturn(studentUngradReasonEntity);
         when(this.gradStudentUngradReasonsRepository.findById(ungradReasonID)).thenReturn(optional);
@@ -230,15 +229,15 @@ public class CommonServiceTest {
     @Test
     public void testGetStudentUngradReasons() {
         // UUID
-        UUID studentID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons Data
-        List<GradStudentUngradReasonsEntity> gradStudentUngradReasonsList = new ArrayList<>();
-        GradStudentUngradReasonsEntity studentUngradReason = new GradStudentUngradReasonsEntity();
+        final List<GradStudentUngradReasonsEntity> gradStudentUngradReasonsList = new ArrayList<>();
+        final GradStudentUngradReasonsEntity studentUngradReason = new GradStudentUngradReasonsEntity();
         studentUngradReason.setId(UUID.randomUUID());
         studentUngradReason.setPen("123456789");
         studentUngradReason.setStudentID(studentID);
@@ -254,16 +253,16 @@ public class CommonServiceTest {
     @Test
     public void testGetStudentCareerProgram() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Career Program
-        GradCareerProgram gradCareerProgram = new GradCareerProgram();
+        final GradCareerProgram gradCareerProgram = new GradCareerProgram();
         gradCareerProgram.setCode("TEST");
         gradCareerProgram.setDescription("Test Code Name");
 
         // Student Career Program Data
-        List<GradStudentCareerProgramEntity> gradStudentCareerProgramList = new ArrayList<>();
-        GradStudentCareerProgramEntity studentCareerProgram = new GradStudentCareerProgramEntity();
+        final List<GradStudentCareerProgramEntity> gradStudentCareerProgramList = new ArrayList<>();
+        final GradStudentCareerProgramEntity studentCareerProgram = new GradStudentCareerProgramEntity();
         studentCareerProgram.setId(UUID.randomUUID());
         studentCareerProgram.setPen(pen);
         studentCareerProgram.setStudentID(studentID);
@@ -278,23 +277,23 @@ public class CommonServiceTest {
     @Test
     public void testGetAllStudentCareerProgramsList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Career Program
-        GradCareerProgram gradCareerProgram = new GradCareerProgram();
+        final GradCareerProgram gradCareerProgram = new GradCareerProgram();
         gradCareerProgram.setCode("TEST");
         gradCareerProgram.setDescription("Test Code Name");
 
         // Student Career Program Data
-        List<GradStudentCareerProgram> gradStudentCareerProgramList = new ArrayList<>();
-        GradStudentCareerProgram studentCareerProgram1 = new GradStudentCareerProgram();
+        final List<GradStudentCareerProgram> gradStudentCareerProgramList = new ArrayList<>();
+        final GradStudentCareerProgram studentCareerProgram1 = new GradStudentCareerProgram();
         studentCareerProgram1.setId(UUID.randomUUID());
         studentCareerProgram1.setPen(pen);
         studentCareerProgram1.setStudentID(studentID);
         studentCareerProgram1.setCareerProgramCode(gradCareerProgram.getCode());
         gradStudentCareerProgramList.add(studentCareerProgram1);
 
-        GradStudentCareerProgram studentCareerProgram2 = new GradStudentCareerProgram();
+        final GradStudentCareerProgram studentCareerProgram2 = new GradStudentCareerProgram();
         studentCareerProgram2.setId(UUID.randomUUID());
         studentCareerProgram2.setPen(pen);
         studentCareerProgram2.setStudentID(studentID);
@@ -324,16 +323,16 @@ public class CommonServiceTest {
     @Test
     public void testGetStudentCertificate() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        List<GradStudentCertificatesEntity> gradStudentCertificatesList = new ArrayList<>();
-        GradStudentCertificatesEntity studentCertificate = new GradStudentCertificatesEntity();
+        final List<GradStudentCertificatesEntity> gradStudentCertificatesList = new ArrayList<>();
+        final GradStudentCertificatesEntity studentCertificate = new GradStudentCertificatesEntity();
         studentCertificate.setId(UUID.randomUUID());
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
@@ -348,27 +347,27 @@ public class CommonServiceTest {
     @Test
     public void testSaveGradStudentCertificates_thenReturnCreateSuccess() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        final GradStudentCertificates studentCertificate = new GradStudentCertificates();
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
         studentCertificate.setCertificate("Test Certificate Body");
         studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
 
         // Student Certificate Types Entity
-        GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
+        final GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
         studentCertificateEntity.setPen(pen);
         studentCertificateEntity.setStudentID(studentID);
         studentCertificateEntity.setGradCertificateTypeCode(gradCertificateType.getCode());
 
-        Optional<GradStudentCertificatesEntity> optionalEmpty = Optional.empty();
+        final Optional<GradStudentCertificatesEntity> optionalEmpty = Optional.empty();
 
         when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
         when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optionalEmpty);
@@ -383,27 +382,27 @@ public class CommonServiceTest {
     @Test
     public void testSaveGradStudentCertificatesWithExistingOne_thenReturnUpdateSuccess() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        final GradStudentCertificates studentCertificate = new GradStudentCertificates();
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
         studentCertificate.setCertificate("Test Certificate Body");
         studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
 
         // Student Certificate Types Entity
-        GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
+        final GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
         studentCertificateEntity.setPen(pen);
         studentCertificateEntity.setStudentID(studentID);
         studentCertificateEntity.setGradCertificateTypeCode(gradCertificateType.getCode());
 
-        Optional<GradStudentCertificatesEntity> optional = Optional.of(studentCertificateEntity);
+        final Optional<GradStudentCertificatesEntity> optional = Optional.of(studentCertificateEntity);
 
         when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
         when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optional);
@@ -417,8 +416,8 @@ public class CommonServiceTest {
 
     @Test
     public void testGetStudentReport() {
-        List<GradStudentReportsEntity> reportList = new ArrayList<>();
-        GradStudentReportsEntity report = new GradStudentReportsEntity();
+        final List<GradStudentReportsEntity> reportList = new ArrayList<>();
+        final GradStudentReportsEntity report = new GradStudentReportsEntity();
         report.setId(UUID.randomUUID());
         report.setGradReportTypeCode("TEST");
         report.setPen("123456789");
@@ -434,23 +433,23 @@ public class CommonServiceTest {
     @Test
     public void testSaveGradReports_thenReturnCreateSuccess() {
         // ID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
-        String reportTypeCode = "TEST";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
+        final String reportTypeCode = "TEST";
 
-        GradStudentReports gradStudentReport = new GradStudentReports();
+        final GradStudentReports gradStudentReport = new GradStudentReports();
         gradStudentReport.setGradReportTypeCode(reportTypeCode);
         gradStudentReport.setPen(pen);
         gradStudentReport.setStudentID(studentID);
         gradStudentReport.setReport("TEST Report Body");
 
-        GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
+        final GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
         gradStudentReportEntity.setGradReportTypeCode(reportTypeCode);
         gradStudentReportEntity.setPen(pen);
         gradStudentReportEntity.setStudentID(studentID);
         gradStudentReportEntity.setReport("TEST Report Body");
 
-        Optional<GradStudentReportsEntity> optionalEmpty = Optional.empty();
+        final Optional<GradStudentReportsEntity> optionalEmpty = Optional.empty();
 
         when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
         when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optionalEmpty);
@@ -466,26 +465,26 @@ public class CommonServiceTest {
     @Test
     public void testSaveGradReportsWithExistingOne_thenReturnUpdateSuccess() {
         // ID
-        UUID reportID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
-        String reportTypeCode = "TEST";
+        final UUID reportID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
+        final String reportTypeCode = "TEST";
 
-        GradStudentReports gradStudentReport = new GradStudentReports();
+        final GradStudentReports gradStudentReport = new GradStudentReports();
         gradStudentReport.setId(reportID);
         gradStudentReport.setGradReportTypeCode(reportTypeCode);
         gradStudentReport.setPen(pen);
         gradStudentReport.setStudentID(studentID);
         gradStudentReport.setReport("TEST Report Body");
 
-        GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
+        final GradStudentReportsEntity gradStudentReportEntity = new GradStudentReportsEntity();
         gradStudentReportEntity.setId(reportID);
         gradStudentReportEntity.setGradReportTypeCode(reportTypeCode);
         gradStudentReportEntity.setPen(pen);
         gradStudentReportEntity.setStudentID(studentID);
         gradStudentReportEntity.setReport("TEST Report Body");
 
-        Optional<GradStudentReportsEntity> optional = Optional.of(gradStudentReportEntity);
+        final Optional<GradStudentReportsEntity> optional = Optional.of(gradStudentReportEntity);
 
         when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
         when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optional);
@@ -501,12 +500,12 @@ public class CommonServiceTest {
     @Test
     public void testGetStudentReportByType() {
         // ID
-        UUID reportID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
-        String reportTypeCode = "TEST";
+        final UUID reportID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
+        final String reportTypeCode = "TEST";
 
-        GradStudentReports gradStudentReport = new GradStudentReports();
+        final GradStudentReports gradStudentReport = new GradStudentReports();
         gradStudentReport.setId(reportID);
         gradStudentReport.setGradReportTypeCode(reportTypeCode);
         gradStudentReport.setPen(pen);
@@ -523,15 +522,15 @@ public class CommonServiceTest {
     @Test
     public void testGetStudentCertificateByType() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        final GradStudentCertificates studentCertificate = new GradStudentCertificates();
         studentCertificate.setId(UUID.randomUUID());
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
@@ -548,23 +547,23 @@ public class CommonServiceTest {
     @Test
     public void testGetAllStudentCertificateList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        List<GradStudentCertificates> gradStudentCertificatesList = new ArrayList<>();
-        GradStudentCertificates studentCertificate1 = new GradStudentCertificates();
+        final List<GradStudentCertificates> gradStudentCertificatesList = new ArrayList<>();
+        final GradStudentCertificates studentCertificate1 = new GradStudentCertificates();
         studentCertificate1.setId(UUID.randomUUID());
         studentCertificate1.setPen(pen);
         studentCertificate1.setStudentID(studentID);
         studentCertificate1.setGradCertificateTypeCode(gradCertificateType.getCode());
         gradStudentCertificatesList.add(studentCertificate1);
 
-        GradStudentCertificates studentCertificate2 = new GradStudentCertificates();
+        final GradStudentCertificates studentCertificate2 = new GradStudentCertificates();
         studentCertificate2.setId(UUID.randomUUID());
         studentCertificate2.setPen(pen);
         studentCertificate2.setStudentID(studentID);
@@ -594,13 +593,13 @@ public class CommonServiceTest {
     @Test
     public void testGetAlgorithmRulesList() {
         // UUID
-        UUID ID = UUID.randomUUID();
-        String programCode = "2018-EN";
+        final UUID ID = UUID.randomUUID();
+        final String programCode = "2018-EN";
 
         // Student Certificate Types
-        List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
 
-        GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -608,7 +607,7 @@ public class CommonServiceTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -630,14 +629,14 @@ public class CommonServiceTest {
     @Test
     public void testGetAllAlgorithmRulesList() {
         // UUID
-        UUID ID = UUID.randomUUID();
-        String programCode1 = "2018-EN";
-        String programCode2 = "2018-FI";
+        final UUID ID = UUID.randomUUID();
+        final String programCode1 = "2018-EN";
+        final String programCode2 = "2018-FI";
 
         // Student Certificate Types
-        List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
 
-        GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -645,7 +644,7 @@ public class CommonServiceTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -653,7 +652,7 @@ public class CommonServiceTest {
         gradAlgorithmRule2.setSortOrder(1);
         algorithmsRulesList.add(gradAlgorithmRule2);
 
-        GradAlgorithmRules gradAlgorithmRule3 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule3 = new GradAlgorithmRules();
         gradAlgorithmRule3.setId(ID);
         gradAlgorithmRule3.setRuleName("Test3");
         gradAlgorithmRule3.setRuleDescription("Test3 Description");
@@ -661,7 +660,7 @@ public class CommonServiceTest {
         gradAlgorithmRule3.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule3);
 
-        GradAlgorithmRules gradAlgorithmRule4 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule4 = new GradAlgorithmRules();
         gradAlgorithmRule4.setId(ID);
         gradAlgorithmRule4.setRuleName("Test4");
         gradAlgorithmRule4.setRuleDescription("Test4 Description");
@@ -685,12 +684,12 @@ public class CommonServiceTest {
     @Test
     public void testGetAllStudentNotes() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        List<StudentNote> allNotesList = new ArrayList<>();
+        final List<StudentNote> allNotesList = new ArrayList<>();
 
-        StudentNote note1 = new StudentNote();
+        final StudentNote note1 = new StudentNote();
         note1.setId(UUID.randomUUID());
         note1.setStudentID(studentID.toString());
         note1.setPen(pen);
@@ -698,7 +697,7 @@ public class CommonServiceTest {
         note1.setUpdatedTimestamp(new Date(System.currentTimeMillis()));
         allNotesList.add(note1);
 
-        StudentNote note2 = new StudentNote();
+        final StudentNote note2 = new StudentNote();
         note2.setId(UUID.randomUUID());
         note2.setStudentID(studentID.toString());
         note2.setPen(pen);
@@ -721,22 +720,22 @@ public class CommonServiceTest {
     @Test
     public void testSaveStudentNote_thenReturnCreateSuccess() {
         // ID
-        UUID noteID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID noteID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        StudentNote studentNote = new StudentNote();
+        final StudentNote studentNote = new StudentNote();
         studentNote.setStudentID(studentID.toString());
         studentNote.setPen(pen);
         studentNote.setNote("Test Note Body");
 
-        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        final StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
         studentNoteEntity.setId(noteID);
         studentNoteEntity.setStudentID(studentID);
         studentNoteEntity.setPen(pen);
         studentNoteEntity.setNote("Test Note Body");
 
-        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+        final Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
 
         when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
         when(this.studentNoteTransformer.transformToDTO(this.studentNoteRepository.save(studentNoteEntity))).thenReturn(studentNote);
@@ -751,23 +750,23 @@ public class CommonServiceTest {
     @Test
     public void testSaveStudentNoteWithExistingOne_thenReturnUpdateSuccess() {
         // ID
-        UUID noteID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID noteID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        StudentNote studentNote = new StudentNote();
+        final StudentNote studentNote = new StudentNote();
         studentNote.setId(noteID);
         studentNote.setStudentID(studentID.toString());
         studentNote.setPen(pen);
         studentNote.setNote("Test Note Body");
 
-        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        final StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
         studentNoteEntity.setId(noteID);
         studentNoteEntity.setStudentID(studentID);
         studentNoteEntity.setPen(pen);
         studentNoteEntity.setNote("Test Note Body");
 
-        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+        final Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
 
         when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
         when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
@@ -784,17 +783,17 @@ public class CommonServiceTest {
     @Test
     public void testDeleteNote() {
         // ID
-        UUID noteID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID noteID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
+        final StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
         studentNoteEntity.setId(noteID);
         studentNoteEntity.setStudentID(studentID);
         studentNoteEntity.setPen(pen);
         studentNoteEntity.setNote("Test Note Body");
 
-        Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
+        final Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
 
         when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
 
@@ -806,8 +805,8 @@ public class CommonServiceTest {
 
     @Test
     public void testDeleteNoteWhenGivenNoteIdDoesNotExist() {
-        UUID noteID = UUID.randomUUID();
-        Optional<StudentNoteEntity> optional = Optional.empty();
+        final UUID noteID = UUID.randomUUID();
+        final Optional<StudentNoteEntity> optional = Optional.empty();
 
         when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
 
