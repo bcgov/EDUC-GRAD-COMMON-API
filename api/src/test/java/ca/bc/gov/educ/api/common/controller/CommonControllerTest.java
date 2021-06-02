@@ -52,22 +52,22 @@ public class CommonControllerTest {
     @Test
     public void testGetAllStudentUngradReasonsList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons Data
-        List<GradStudentUngradReasons> gradStudentUngradReasonsList = new ArrayList<>();
-        GradStudentUngradReasons studentUngradReason1 = new GradStudentUngradReasons();
+        final List<GradStudentUngradReasons> gradStudentUngradReasonsList = new ArrayList<>();
+        final GradStudentUngradReasons studentUngradReason1 = new GradStudentUngradReasons();
         studentUngradReason1.setId(UUID.randomUUID());
         studentUngradReason1.setPen("123456789");
         studentUngradReason1.setStudentID(studentID);
         studentUngradReason1.setUngradReasonCode(gradUngradReason.getCode());
         gradStudentUngradReasonsList.add(studentUngradReason1);
 
-        GradStudentUngradReasons studentUngradReason2 = new GradStudentUngradReasons();
+        final GradStudentUngradReasons studentUngradReason2 = new GradStudentUngradReasons();
         studentUngradReason2.setId(UUID.randomUUID());
         studentUngradReason2.setPen("123456789");
         studentUngradReason2.setStudentID(studentID);
@@ -91,14 +91,14 @@ public class CommonControllerTest {
     @Test
     public void testCreateGradStudentUngradReason() {
         // UUID
-        UUID studentID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
         // Ungrad Reasons
-        GradUngradReasons gradUngradReason = new GradUngradReasons();
+        final GradUngradReasons gradUngradReason = new GradUngradReasons();
         gradUngradReason.setCode("TEST");
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons
-        GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
+        final GradStudentUngradReasons studentUngradReason = new GradStudentUngradReasons();
         studentUngradReason.setPen("123456789");
         studentUngradReason.setStudentID(studentID);
         studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
@@ -118,7 +118,7 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentUngradReasons() {
-        String reasonCode = "TEST";
+        final String reasonCode = "TEST";
 
         Mockito.when(commonService.getStudentUngradReasons(reasonCode)).thenReturn(true);
         commonController.getStudentUngradReasons(reasonCode);
@@ -127,7 +127,7 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentCareerProgram() {
-       String programCode = "2018-EN";
+        final String programCode = "2018-EN";
 
        Mockito.when(commonService.getStudentCareerProgram(programCode)).thenReturn(true);
        commonController.getStudentCareerProgram(programCode);
@@ -137,23 +137,23 @@ public class CommonControllerTest {
     @Test
     public void testGetAllStudentCareerProgramsList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Career Program
-        GradCareerProgram gradCareerProgram = new GradCareerProgram();
+        final GradCareerProgram gradCareerProgram = new GradCareerProgram();
         gradCareerProgram.setCode("TEST");
         gradCareerProgram.setDescription("Test Code Name");
 
         // Student Career Program Data
-        List<GradStudentCareerProgram> gradStudentCareerProgramList = new ArrayList<>();
-        GradStudentCareerProgram studentCareerProgram1 = new GradStudentCareerProgram();
+        final List<GradStudentCareerProgram> gradStudentCareerProgramList = new ArrayList<>();
+        final GradStudentCareerProgram studentCareerProgram1 = new GradStudentCareerProgram();
         studentCareerProgram1.setId(UUID.randomUUID());
         studentCareerProgram1.setPen(pen);
         studentCareerProgram1.setStudentID(studentID);
         studentCareerProgram1.setCareerProgramCode(gradCareerProgram.getCode());
         gradStudentCareerProgramList.add(studentCareerProgram1);
 
-        GradStudentCareerProgram studentCareerProgram2 = new GradStudentCareerProgram();
+        final GradStudentCareerProgram studentCareerProgram2 = new GradStudentCareerProgram();
         studentCareerProgram2.setId(UUID.randomUUID());
         studentCareerProgram2.setPen(pen);
         studentCareerProgram2.setStudentID(studentID);
@@ -175,7 +175,7 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentCertificate() {
-        String certificateTypeCode = "TEST";
+        final String certificateTypeCode = "TEST";
 
         Mockito.when(commonService.getStudentCertificate(certificateTypeCode)).thenReturn(true);
         commonController.getStudentCertificate(certificateTypeCode);
@@ -185,15 +185,15 @@ public class CommonControllerTest {
     @Test
     public void testSaveStudentCertificate() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        final  GradStudentCertificates studentCertificate = new GradStudentCertificates();
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
         studentCertificate.setCertificate("Test Certificate Body");
@@ -206,7 +206,7 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentReport() {
-        String reportTypeCode = "TEST";
+        final String reportTypeCode = "TEST";
         Mockito.when(commonService.getStudentReport(reportTypeCode)).thenReturn(Boolean.TRUE);
         commonController.getStudentReport(reportTypeCode);
         Mockito.verify(commonService).getStudentReport(reportTypeCode);
@@ -215,11 +215,11 @@ public class CommonControllerTest {
     @Test
     public void testSaveStudentReport() {
         // ID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
-        String reportTypeCode = "TEST";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
+        final String reportTypeCode = "TEST";
 
-        GradStudentReports gradStudentReport = new GradStudentReports();
+        final GradStudentReports gradStudentReport = new GradStudentReports();
         gradStudentReport.setGradReportTypeCode(reportTypeCode);
         gradStudentReport.setPen(pen);
         gradStudentReport.setStudentID(studentID);
@@ -233,9 +233,9 @@ public class CommonControllerTest {
     @Test
     public void testGetStudentReportByType() {
         // ID
-        String pen = "123456789";
-        String reportTypeCode = "TEST";
-        String reportBody = "Test Report Body";
+        final String pen = "123456789";
+        final String reportTypeCode = "TEST";
+        final String reportBody = "Test Report Body";
 
         byte[] certificateByte = Base64.decodeBase64(reportBody.getBytes(StandardCharsets.US_ASCII));
         ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
@@ -255,9 +255,9 @@ public class CommonControllerTest {
 
     @Test
     public void testGetStudentCertificateByType() {
-        String pen = "123456789";
-        String certificateTypeCode = "TEST";
-        String certificateBody = "Test Certificate Body";
+        final String pen = "123456789";
+        final String certificateTypeCode = "TEST";
+        final String certificateBody = "Test Certificate Body";
 
         byte[] certificateByte = Base64.decodeBase64(certificateBody.getBytes(StandardCharsets.US_ASCII));
         ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
@@ -277,23 +277,23 @@ public class CommonControllerTest {
     @Test
     public void testGetAllStudentCertificateList() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
         // Certificate Type
-        GradCertificateTypes gradCertificateType = new GradCertificateTypes();
+        final GradCertificateTypes gradCertificateType = new GradCertificateTypes();
         gradCertificateType.setCode("TEST");
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        List<GradStudentCertificates> gradStudentCertificatesList = new ArrayList<>();
-        GradStudentCertificates studentCertificate1 = new GradStudentCertificates();
+        final List<GradStudentCertificates> gradStudentCertificatesList = new ArrayList<>();
+        final GradStudentCertificates studentCertificate1 = new GradStudentCertificates();
         studentCertificate1.setId(UUID.randomUUID());
         studentCertificate1.setPen(pen);
         studentCertificate1.setStudentID(studentID);
         studentCertificate1.setGradCertificateTypeCode(gradCertificateType.getCode());
         gradStudentCertificatesList.add(studentCertificate1);
 
-        GradStudentCertificates studentCertificate2 = new GradStudentCertificates();
+        final GradStudentCertificates studentCertificate2 = new GradStudentCertificates();
         studentCertificate2.setId(UUID.randomUUID());
         studentCertificate2.setPen(pen);
         studentCertificate2.setStudentID(studentID);
@@ -316,13 +316,13 @@ public class CommonControllerTest {
     @Test
     public void testGetAlgorithmRulesList() {
         // UUID
-        UUID ID = UUID.randomUUID();
-        String programCode = "2018-EN";
+        final UUID ID = UUID.randomUUID();
+        final String programCode = "2018-EN";
 
         // Student Certificate Types
-        List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final  List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
 
-        GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -330,7 +330,7 @@ public class CommonControllerTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -346,13 +346,13 @@ public class CommonControllerTest {
     @Test
     public void testGetAllAlgorithmRulesList() {
         // UUID
-        UUID ID = UUID.randomUUID();
-        String programCode = "2018-EN";
+        final UUID ID = UUID.randomUUID();
+        final String programCode = "2018-EN";
 
         // Student Certificate Types
-        List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final  List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
 
-        GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -360,7 +360,7 @@ public class CommonControllerTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -376,12 +376,12 @@ public class CommonControllerTest {
     @Test
     public void testGetAllStudentNotes() {
         // UUID
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        List<StudentNote> allNotesList = new ArrayList<>();
+        final List<StudentNote> allNotesList = new ArrayList<>();
 
-        StudentNote note1 = new StudentNote();
+        final StudentNote note1 = new StudentNote();
         note1.setId(UUID.randomUUID());
         note1.setStudentID(studentID.toString());
         note1.setPen(pen);
@@ -389,7 +389,7 @@ public class CommonControllerTest {
         note1.setUpdatedTimestamp(new Date(System.currentTimeMillis()));
         allNotesList.add(note1);
 
-        StudentNote note2 = new StudentNote();
+        final StudentNote note2 = new StudentNote();
         note2.setId(UUID.randomUUID());
         note2.setStudentID(studentID.toString());
         note2.setPen(pen);
@@ -405,11 +405,11 @@ public class CommonControllerTest {
     @Test
     public void testSaveStudentNotes() {
         // ID
-        UUID noteID = UUID.randomUUID();
-        UUID studentID = UUID.randomUUID();
-        String pen = "123456789";
+        final UUID noteID = UUID.randomUUID();
+        final UUID studentID = UUID.randomUUID();
+        final String pen = "123456789";
 
-        StudentNote studentNote = new StudentNote();
+        final StudentNote studentNote = new StudentNote();
         studentNote.setId(noteID);
         studentNote.setStudentID(studentID.toString());
         studentNote.setPen(pen);
@@ -423,7 +423,7 @@ public class CommonControllerTest {
     @Test
     public void testDeleteNotes() {
         // ID
-        UUID noteID = UUID.randomUUID();
+        final UUID noteID = UUID.randomUUID();
 
         Mockito.when(commonService.deleteNote(noteID)).thenReturn(1);
         commonController.deleteNotes(noteID.toString());
