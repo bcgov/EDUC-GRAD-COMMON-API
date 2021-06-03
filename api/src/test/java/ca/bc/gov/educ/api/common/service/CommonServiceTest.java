@@ -2,13 +2,10 @@ package ca.bc.gov.educ.api.common.service;
 
 import ca.bc.gov.educ.api.common.model.dto.*;
 import ca.bc.gov.educ.api.common.model.entity.*;
-import ca.bc.gov.educ.api.common.model.transformer.*;
 import ca.bc.gov.educ.api.common.repository.*;
 import ca.bc.gov.educ.api.common.util.EducGradCommonApiConstants;
 
 import ca.bc.gov.educ.api.common.util.GradBusinessRuleException;
-import org.apache.commons.lang3.time.DateUtils;
-import org.assertj.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -65,23 +61,23 @@ public class CommonServiceTest {
     @MockBean
     private StudentNoteRepository studentNoteRepository;
 
-    @MockBean
-    private GradStudentUngradReasonsTransformer gradStudentUngradReasonsTransformer;
-
-    @MockBean
-    private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
-
-    @MockBean
-    private GradStudentCertificatesTransformer gradStudentCertificatesTransformer;
-
-    @MockBean
-    private GradAlgorithmRulesTransformer gradAlgorithmRulesTransformer;
-
-    @MockBean
-    private GradStudentReportsTransformer gradStudentReportsTransformer;
-
-    @MockBean
-    private StudentNoteTransformer studentNoteTransformer;
+//    @MockBean
+//    private GradStudentUngradReasonsTransformer gradStudentUngradReasonsTransformer;
+//
+//    @MockBean
+//    private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
+//
+//    @MockBean
+//    private GradStudentCertificatesTransformer gradStudentCertificatesTransformer;
+//
+//    @MockBean
+//    private GradAlgorithmRulesTransformer gradAlgorithmRulesTransformer;
+//
+//    @MockBean
+//    private GradStudentReportsTransformer gradStudentReportsTransformer;
+//
+//    @MockBean
+//    private StudentNoteTransformer studentNoteTransformer;
 
 
     @MockBean
@@ -118,22 +114,22 @@ public class CommonServiceTest {
         gradUngradReason.setDescription("Test Code Name");
 
         // Student Ungrad Reasons Data
-        final List<GradStudentUngradReasons> gradStudentUngradReasonsList = new ArrayList<>();
-        final GradStudentUngradReasons studentUngradReason1 = new GradStudentUngradReasons();
+        final List<GradStudentUngradReasonsEntity> gradStudentUngradReasonsList = new ArrayList<>();
+        final GradStudentUngradReasonsEntity studentUngradReason1 = new GradStudentUngradReasonsEntity();
         studentUngradReason1.setId(UUID.randomUUID());
         studentUngradReason1.setPen("123456789");
         studentUngradReason1.setStudentID(studentID);
         studentUngradReason1.setUngradReasonCode(gradUngradReason.getCode());
         gradStudentUngradReasonsList.add(studentUngradReason1);
 
-        final GradStudentUngradReasons studentUngradReason2 = new GradStudentUngradReasons();
+        final GradStudentUngradReasonsEntity studentUngradReason2 = new GradStudentUngradReasonsEntity();
         studentUngradReason2.setId(UUID.randomUUID());
         studentUngradReason2.setPen("123456789");
         studentUngradReason2.setStudentID(studentID);
         studentUngradReason2.setUngradReasonCode(gradUngradReason.getCode());
         gradStudentUngradReasonsList.add(studentUngradReason2);
 
-        when(gradStudentUngradReasonsTransformer.transformToDTO(gradStudentUngradReasonsRepository.findByStudentID(studentID))).thenReturn(gradStudentUngradReasonsList);
+        when(gradStudentUngradReasonsRepository.findByStudentID(studentID)).thenReturn(gradStudentUngradReasonsList);
 
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getUngradReasonByCodeUrl(),gradUngradReason.getCode()))).thenReturn(this.requestHeadersMock);
@@ -174,15 +170,13 @@ public class CommonServiceTest {
         studentUngradReasonEntity.setStudentID(studentID);
         studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
 
-        when(this.gradStudentUngradReasonsTransformer.transformToEntity(studentUngradReason)).thenReturn(studentUngradReasonEntity);
-
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getUngradReasonByCodeUrl(),gradUngradReason.getCode()))).thenReturn(this.requestHeadersMock);
         when(this.requestHeadersMock.headers(any(Consumer.class))).thenReturn(this.requestHeadersMock);
         when(this.requestHeadersMock.retrieve()).thenReturn(this.responseMock);
         when(this.responseMock.bodyToMono(GradUngradReasons.class)).thenReturn(Mono.just(gradUngradReason));
 
-        when(this.gradStudentUngradReasonsTransformer.transformToDTO(this.gradStudentUngradReasonsRepository.save(studentUngradReasonEntity))).thenReturn(studentUngradReason);
+        when(this.gradStudentUngradReasonsRepository.save(studentUngradReasonEntity)).thenReturn(studentUngradReasonEntity);
 
         var result = commonService.createGradStudentUngradReasons(studentUngradReason, "accessToken");
 
@@ -215,7 +209,6 @@ public class CommonServiceTest {
 
         final Optional<GradStudentUngradReasonsEntity> optional = Optional.of(studentUngradReasonEntity);
 
-        when(this.gradStudentUngradReasonsTransformer.transformToEntity(studentUngradReason)).thenReturn(studentUngradReasonEntity);
         when(this.gradStudentUngradReasonsRepository.findById(ungradReasonID)).thenReturn(optional);
 
         try {
@@ -285,22 +278,22 @@ public class CommonServiceTest {
         gradCareerProgram.setDescription("Test Code Name");
 
         // Student Career Program Data
-        final List<GradStudentCareerProgram> gradStudentCareerProgramList = new ArrayList<>();
-        final GradStudentCareerProgram studentCareerProgram1 = new GradStudentCareerProgram();
+        final List<GradStudentCareerProgramEntity> gradStudentCareerProgramList = new ArrayList<>();
+        final GradStudentCareerProgramEntity studentCareerProgram1 = new GradStudentCareerProgramEntity();
         studentCareerProgram1.setId(UUID.randomUUID());
         studentCareerProgram1.setPen(pen);
         studentCareerProgram1.setStudentID(studentID);
         studentCareerProgram1.setCareerProgramCode(gradCareerProgram.getCode());
         gradStudentCareerProgramList.add(studentCareerProgram1);
 
-        final GradStudentCareerProgram studentCareerProgram2 = new GradStudentCareerProgram();
+        final GradStudentCareerProgramEntity studentCareerProgram2 = new GradStudentCareerProgramEntity();
         studentCareerProgram2.setId(UUID.randomUUID());
         studentCareerProgram2.setPen(pen);
         studentCareerProgram2.setStudentID(studentID);
         studentCareerProgram2.setCareerProgramCode(gradCareerProgram.getCode());
         gradStudentCareerProgramList.add(studentCareerProgram2);
 
-        when(gradStudentCareerProgramTransformer.transformToDTO(gradStudentCareerProgramRepository.findByPen(pen))).thenReturn(gradStudentCareerProgramList);
+        when(gradStudentCareerProgramRepository.findByPen(pen)).thenReturn(gradStudentCareerProgramList);
 
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getCareerProgramByCodeUrl(), gradCareerProgram.getCode()))).thenReturn(this.requestHeadersMock);
@@ -365,13 +358,13 @@ public class CommonServiceTest {
         final GradStudentCertificatesEntity studentCertificateEntity = new GradStudentCertificatesEntity();
         studentCertificateEntity.setPen(pen);
         studentCertificateEntity.setStudentID(studentID);
+        studentCertificateEntity.setCertificate("Test Certificate Body");
         studentCertificateEntity.setGradCertificateTypeCode(gradCertificateType.getCode());
 
         final Optional<GradStudentCertificatesEntity> optionalEmpty = Optional.empty();
 
-        when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
         when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optionalEmpty);
-        when(this.gradStudentCertificatesTransformer.transformToDTO(this.gradStudentCertificatesRepository.save(studentCertificateEntity))).thenReturn(studentCertificate);
+        when(this.gradStudentCertificatesRepository.save(studentCertificateEntity)).thenReturn(studentCertificateEntity);
 
         var result = commonService.saveGradCertificates(studentCertificate);
 
@@ -404,9 +397,8 @@ public class CommonServiceTest {
 
         final Optional<GradStudentCertificatesEntity> optional = Optional.of(studentCertificateEntity);
 
-        when(this.gradStudentCertificatesTransformer.transformToEntity(studentCertificate)).thenReturn(studentCertificateEntity);
         when(this.gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(optional);
-        when(this.gradStudentCertificatesTransformer.transformToDTO(this.gradStudentCertificatesRepository.save(studentCertificateEntity))).thenReturn(studentCertificate);
+        when(this.gradStudentCertificatesRepository.save(studentCertificateEntity)).thenReturn(studentCertificateEntity);
 
         var result = commonService.saveGradCertificates(studentCertificate);
 
@@ -451,9 +443,8 @@ public class CommonServiceTest {
 
         final Optional<GradStudentReportsEntity> optionalEmpty = Optional.empty();
 
-        when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
         when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optionalEmpty);
-        when(this.gradStudentReportsTransformer.transformToDTO(this.gradStudentReportsRepository.save(gradStudentReportEntity))).thenReturn(gradStudentReport);
+        when(this.gradStudentReportsRepository.save(gradStudentReportEntity)).thenReturn(gradStudentReportEntity);
 
         var result = commonService.saveGradReports(gradStudentReport);
 
@@ -486,9 +477,8 @@ public class CommonServiceTest {
 
         final Optional<GradStudentReportsEntity> optional = Optional.of(gradStudentReportEntity);
 
-        when(this.gradStudentReportsTransformer.transformToEntity(gradStudentReport)).thenReturn(gradStudentReportEntity);
         when(this.gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(optional);
-        when(this.gradStudentReportsTransformer.transformToDTO(this.gradStudentReportsRepository.save(gradStudentReportEntity))).thenReturn(gradStudentReport);
+        when(this.gradStudentReportsRepository.save(gradStudentReportEntity)).thenReturn(gradStudentReportEntity);
 
         var result = commonService.saveGradReports(gradStudentReport);
 
@@ -505,14 +495,14 @@ public class CommonServiceTest {
         final String pen = "123456789";
         final String reportTypeCode = "TEST";
 
-        final GradStudentReports gradStudentReport = new GradStudentReports();
+        final GradStudentReportsEntity gradStudentReport = new GradStudentReportsEntity();
         gradStudentReport.setId(reportID);
         gradStudentReport.setGradReportTypeCode(reportTypeCode);
         gradStudentReport.setPen(pen);
         gradStudentReport.setStudentID(studentID);
         gradStudentReport.setReport("TEST Report Body");
 
-        when(gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode))).thenReturn(gradStudentReport);
+        when(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(Optional.of(gradStudentReport));
         var result = commonService.getStudentReportByType(pen, reportTypeCode);
         assertThat(result).isNotNull();
         assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_report.pdf]");
@@ -530,14 +520,14 @@ public class CommonServiceTest {
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        final GradStudentCertificates studentCertificate = new GradStudentCertificates();
+        final GradStudentCertificatesEntity studentCertificate = new GradStudentCertificatesEntity();
         studentCertificate.setId(UUID.randomUUID());
         studentCertificate.setPen(pen);
         studentCertificate.setStudentID(studentID);
         studentCertificate.setCertificate("TEST Certificate Body");
         studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
 
-        when(gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode()))).thenReturn(studentCertificate);
+        when(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(Optional.of(studentCertificate));
         var result = commonService.getStudentCertificateByType(pen, gradCertificateType.getCode());
         assertThat(result).isNotNull();
         assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_certificate.pdf]");
@@ -555,22 +545,22 @@ public class CommonServiceTest {
         gradCertificateType.setDescription("Test Code Name");
 
         // Student Certificate Types
-        final List<GradStudentCertificates> gradStudentCertificatesList = new ArrayList<>();
-        final GradStudentCertificates studentCertificate1 = new GradStudentCertificates();
+        final List<GradStudentCertificatesEntity> gradStudentCertificatesList = new ArrayList<>();
+        final GradStudentCertificatesEntity studentCertificate1 = new GradStudentCertificatesEntity();
         studentCertificate1.setId(UUID.randomUUID());
         studentCertificate1.setPen(pen);
         studentCertificate1.setStudentID(studentID);
         studentCertificate1.setGradCertificateTypeCode(gradCertificateType.getCode());
         gradStudentCertificatesList.add(studentCertificate1);
 
-        final GradStudentCertificates studentCertificate2 = new GradStudentCertificates();
+        final GradStudentCertificatesEntity studentCertificate2 = new GradStudentCertificatesEntity();
         studentCertificate2.setId(UUID.randomUUID());
         studentCertificate2.setPen(pen);
         studentCertificate2.setStudentID(studentID);
         studentCertificate2.setGradCertificateTypeCode(gradCertificateType.getCode());
         gradStudentCertificatesList.add(studentCertificate2);
 
-        when(gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen))).thenReturn(gradStudentCertificatesList);
+        when(gradStudentCertificatesRepository.findByPen(pen)).thenReturn(gradStudentCertificatesList);
 
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getCertificateByCodeUrl(), gradCertificateType.getCode()))).thenReturn(this.requestHeadersMock);
@@ -597,9 +587,9 @@ public class CommonServiceTest {
         final String programCode = "2018-EN";
 
         // Student Certificate Types
-        final List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final List<GradAlgorithmRulesEntity> algorithmsRulesList = new ArrayList<>();
 
-        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule1 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -607,7 +597,7 @@ public class CommonServiceTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule2 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -615,7 +605,7 @@ public class CommonServiceTest {
         gradAlgorithmRule2.setSortOrder(1);
         algorithmsRulesList.add(gradAlgorithmRule2);
 
-        when(gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.getAlgorithmRulesByProgramCode(programCode))).thenReturn(algorithmsRulesList);
+        when(gradAlgorithmRulesRepository.getAlgorithmRulesByProgramCode(programCode)).thenReturn(algorithmsRulesList);
 
         var result = commonService.getAlgorithmRulesList(programCode);
 
@@ -634,9 +624,9 @@ public class CommonServiceTest {
         final String programCode2 = "2018-FI";
 
         // Student Certificate Types
-        final List<GradAlgorithmRules> algorithmsRulesList = new ArrayList<>();
+        final List<GradAlgorithmRulesEntity> algorithmsRulesList = new ArrayList<>();
 
-        final GradAlgorithmRules gradAlgorithmRule1 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule1 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule1.setId(ID);
         gradAlgorithmRule1.setRuleName("Test1");
         gradAlgorithmRule1.setRuleDescription("Test1 Description");
@@ -644,7 +634,7 @@ public class CommonServiceTest {
         gradAlgorithmRule1.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule1);
 
-        final GradAlgorithmRules gradAlgorithmRule2 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule2 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule2.setId(ID);
         gradAlgorithmRule2.setRuleName("Test2");
         gradAlgorithmRule2.setRuleDescription("Test2 Description");
@@ -652,7 +642,7 @@ public class CommonServiceTest {
         gradAlgorithmRule2.setSortOrder(1);
         algorithmsRulesList.add(gradAlgorithmRule2);
 
-        final GradAlgorithmRules gradAlgorithmRule3 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule3 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule3.setId(ID);
         gradAlgorithmRule3.setRuleName("Test3");
         gradAlgorithmRule3.setRuleDescription("Test3 Description");
@@ -660,7 +650,7 @@ public class CommonServiceTest {
         gradAlgorithmRule3.setSortOrder(2);
         algorithmsRulesList.add(gradAlgorithmRule3);
 
-        final GradAlgorithmRules gradAlgorithmRule4 = new GradAlgorithmRules();
+        final GradAlgorithmRulesEntity gradAlgorithmRule4 = new GradAlgorithmRulesEntity();
         gradAlgorithmRule4.setId(ID);
         gradAlgorithmRule4.setRuleName("Test4");
         gradAlgorithmRule4.setRuleDescription("Test4 Description");
@@ -668,7 +658,7 @@ public class CommonServiceTest {
         gradAlgorithmRule4.setSortOrder(1);
         algorithmsRulesList.add(gradAlgorithmRule4);
 
-        when(gradAlgorithmRulesTransformer.transformToDTO(gradAlgorithmRulesRepository.findAll())).thenReturn(algorithmsRulesList);
+        when(gradAlgorithmRulesRepository.findAll()).thenReturn(algorithmsRulesList);
 
         var result = commonService.getAllAlgorithmRulesList();
 
@@ -687,25 +677,25 @@ public class CommonServiceTest {
         final UUID studentID = UUID.randomUUID();
         final String pen = "123456789";
 
-        final List<StudentNote> allNotesList = new ArrayList<>();
+        final List<StudentNoteEntity> allNotesList = new ArrayList<>();
 
-        final StudentNote note1 = new StudentNote();
+        final StudentNoteEntity note1 = new StudentNoteEntity();
         note1.setId(UUID.randomUUID());
-        note1.setStudentID(studentID.toString());
+        note1.setStudentID(studentID);
         note1.setPen(pen);
         note1.setNote("Test1 Comments");
         note1.setUpdatedTimestamp(new Date(System.currentTimeMillis()));
         allNotesList.add(note1);
 
-        final StudentNote note2 = new StudentNote();
+        final StudentNoteEntity note2 = new StudentNoteEntity();
         note2.setId(UUID.randomUUID());
-        note2.setStudentID(studentID.toString());
+        note2.setStudentID(studentID);
         note2.setPen(pen);
         note2.setNote("Test2 Comments");
         note2.setUpdatedTimestamp(new Date(System.currentTimeMillis() + 100000L));
         allNotesList.add(note2);
 
-        when(studentNoteTransformer.transformToDTO(studentNoteRepository.findByPen(pen))).thenReturn(allNotesList);
+        when(studentNoteRepository.findByPen(pen)).thenReturn(allNotesList);
 
         var result = commonService.getAllStudentNotes(pen);
 
@@ -720,7 +710,6 @@ public class CommonServiceTest {
     @Test
     public void testSaveStudentNote_thenReturnCreateSuccess() {
         // ID
-        final UUID noteID = UUID.randomUUID();
         final UUID studentID = UUID.randomUUID();
         final String pen = "123456789";
 
@@ -730,15 +719,13 @@ public class CommonServiceTest {
         studentNote.setNote("Test Note Body");
 
         final StudentNoteEntity studentNoteEntity = new StudentNoteEntity();
-        studentNoteEntity.setId(noteID);
         studentNoteEntity.setStudentID(studentID);
         studentNoteEntity.setPen(pen);
         studentNoteEntity.setNote("Test Note Body");
 
         final Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
 
-        when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
-        when(this.studentNoteTransformer.transformToDTO(this.studentNoteRepository.save(studentNoteEntity))).thenReturn(studentNote);
+        when(this.studentNoteRepository.save(studentNoteEntity)).thenReturn(studentNoteEntity);
 
         var result = commonService.saveStudentNote(studentNote);
 
@@ -768,9 +755,8 @@ public class CommonServiceTest {
 
         final Optional<StudentNoteEntity> optional = Optional.of(studentNoteEntity);
 
-        when(this.studentNoteTransformer.transformToEntity(studentNote)).thenReturn(studentNoteEntity);
         when(this.studentNoteRepository.findById(noteID)).thenReturn(optional);
-        when(this.studentNoteTransformer.transformToDTO(this.studentNoteRepository.save(studentNoteEntity))).thenReturn(studentNote);
+        when(this.studentNoteRepository.save(studentNoteEntity)).thenReturn(studentNoteEntity);
 
         var result = commonService.saveStudentNote(studentNote);
 

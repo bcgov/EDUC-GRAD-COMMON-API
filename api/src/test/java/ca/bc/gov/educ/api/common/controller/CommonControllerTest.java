@@ -1,8 +1,6 @@
 package ca.bc.gov.educ.api.common.controller;
 
-
 import ca.bc.gov.educ.api.common.model.dto.*;
-import ca.bc.gov.educ.api.common.model.entity.GradStudentUngradReasonsEntity;
 import ca.bc.gov.educ.api.common.service.CommonService;
 import ca.bc.gov.educ.api.common.util.GradValidation;
 import ca.bc.gov.educ.api.common.util.ResponseHelper;
@@ -15,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
