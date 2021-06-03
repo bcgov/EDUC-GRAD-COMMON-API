@@ -14,8 +14,8 @@
     <properties>
         <sonar.language>java</sonar.language>
         <sonar.exclusions>
-            src/main/resources/**,src/main/java/ca/bc/gov/educ/api/codes/exception/**,src/main/java/ca/bc/gov/educ/api/codes/model/**,
-            src/main/java/ca/bc/gov/educ/api/codes/config/**,src/main/java/ca/bc/gov/educ/api/codes/util/**
+            src/main/resources/**,src/main/java/ca/bc/gov/educ/api/common/exception/**,src/main/java/ca/bc/gov/educ/api/common/model/**,
+            src/main/java/ca/bc/gov/educ/api/common/config/**,src/main/java/ca/bc/gov/educ/api/common/util/**
         </sonar.exclusions>
         <java.version>11</java.version>
         <maven.compiler.version>3.8.0</maven.compiler.version>
