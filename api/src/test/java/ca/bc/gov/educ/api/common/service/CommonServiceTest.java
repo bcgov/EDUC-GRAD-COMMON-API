@@ -61,25 +61,6 @@ public class CommonServiceTest {
     @MockBean
     private StudentNoteRepository studentNoteRepository;
 
-//    @MockBean
-//    private GradStudentUngradReasonsTransformer gradStudentUngradReasonsTransformer;
-//
-//    @MockBean
-//    private GradStudentCareerProgramTransformer gradStudentCareerProgramTransformer;
-//
-//    @MockBean
-//    private GradStudentCertificatesTransformer gradStudentCertificatesTransformer;
-//
-//    @MockBean
-//    private GradAlgorithmRulesTransformer gradAlgorithmRulesTransformer;
-//
-//    @MockBean
-//    private GradStudentReportsTransformer gradStudentReportsTransformer;
-//
-//    @MockBean
-//    private StudentNoteTransformer studentNoteTransformer;
-
-
     @MockBean
     private WebClient webClient;
 
