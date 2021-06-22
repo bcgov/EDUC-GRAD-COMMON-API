@@ -157,8 +157,8 @@ public class CommonService {
 		}
 	}
 	
-	public ResponseEntity<InputStreamResource> getStudentReportByType(String pen, String reportType) {
-		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen,reportType));
+	public ResponseEntity<InputStreamResource> getStudentReportByType(UUID studentID, String reportType) {
+		GradStudentReports studentReport = gradStudentReportsTransformer.transformToDTO(gradStudentReportsRepository.findByStudentIDAndGradReportTypeCode(studentID,reportType));
 		if(studentReport != null && studentReport.getReport() != null) {
 				byte[] reportByte = Base64.decodeBase64(studentReport.getReport().getBytes(StandardCharsets.US_ASCII));
 				ByteArrayInputStream bis = new ByteArrayInputStream(reportByte);
@@ -197,8 +197,8 @@ public class CommonService {
 		}
 	}
 
-	public ResponseEntity<InputStreamResource> getStudentCertificateByType(String pen, String certificateType) {
-		GradStudentCertificates studentCertificate = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen,certificateType));
+	public ResponseEntity<InputStreamResource> getStudentCertificateByType(UUID studentID, String certificateType) {
+		GradStudentCertificates studentCertificate = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByStudentIDAndGradCertificateTypeCode(studentID,certificateType));
 		if(studentCertificate != null && studentCertificate.getCertificate() != null) {
 				byte[] certificateByte = Base64.decodeBase64(studentCertificate.getCertificate().getBytes(StandardCharsets.US_ASCII));
 				ByteArrayInputStream bis = new ByteArrayInputStream(certificateByte);
@@ -213,9 +213,9 @@ public class CommonService {
 		return null;
 	}
 
-	public List<GradStudentCertificates> getAllStudentCertificateList(String pen,String accessToken) {
+	public List<GradStudentCertificates> getAllStudentCertificateList(UUID studentID,String accessToken) {
 		 
-		List<GradStudentCertificates> gradStudentCertificatesList  = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByPen(pen)); 
+		List<GradStudentCertificates> gradStudentCertificatesList  = gradStudentCertificatesTransformer.transformToDTO(gradStudentCertificatesRepository.findByStudentID(studentID)); 
 		gradStudentCertificatesList.forEach(sC -> {
  			GradCertificateTypes gradCertificateTypes = webClient.get().uri(String.format(constants.getCertificateByCodeUrl(),sC.getGradCertificateTypeCode())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradCertificateTypes.class).block();
        		if(gradCertificateTypes != null) {
