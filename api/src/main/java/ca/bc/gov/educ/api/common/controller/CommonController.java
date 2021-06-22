@@ -152,13 +152,13 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_REPORT)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_REPORTS)
-    @Operation(summary = "Read Student Reports by Pen and Report Type", description = "Read Student Reports by Pen and Report Type", tags = { "Reports" })
+    @Operation(summary = "Read Student Reports by Student ID and Report Type", description = "Read Student Reports by Student ID and Report Type", tags = { "Reports" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<InputStreamResource> getStudentReportByType(
-    		@RequestParam(value = "pen", required = true) String pen,
+    		@RequestParam(value = "studentID", required = true) String studentID,
     		@RequestParam(value = "reportType", required = true) String reportType) { 
     	logger.debug("getStudentReportByType : ");
-    	return commonService.getStudentReportByType(pen,reportType);
+    	return commonService.getStudentReportByType(UUID.fromString(studentID),reportType);
     }
     
     @PostMapping (EducGradCommonApiConstants.STUDENT_CERTIFICATE)
@@ -173,24 +173,24 @@ public class CommonController {
     
     @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
-    @Operation(summary = "Read Student Certificate by Pen and Certificate Type", description = "Read Student Certificate by Pen and Certificate Type", tags = { "Certificates" })
+    @Operation(summary = "Read Student Certificate by Student ID and Certificate Type", description = "Read Student Certificate by Student ID and Certificate Type", tags = { "Certificates" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<InputStreamResource> getStudentCertificateByType(
-    		@RequestParam(value = "pen", required = true) String pen,
+    		@RequestParam(value = "studentID", required = true) String studentID,
     		@RequestParam(value = "certificateType", required = true) String certificateType) { 
-    	logger.debug("getStudentCertificateByType : ");
-    	return commonService.getStudentCertificateByType(pen,certificateType);
+    	logger.debug("getStudentCertificateByType :");
+    	return commonService.getStudentCertificateByType(UUID.fromString(studentID),certificateType);
     }
     
-    @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE_BY_PEN)
+    @GetMapping(EducGradCommonApiConstants.STUDENT_CERTIFICATE_BY_STUDENTID)
     @PreAuthorize(PermissionsContants.READ_GRADUATION_STUDENT_CERTIFICATES)
-    @Operation(summary = "Read All  Student Certificates by Pen", description = "Read All Student Certificates by Pen", tags = { "Certificates" })
+    @Operation(summary = "Read All  Student Certificates by Student ID", description = "Read All Student Certificates by Student ID", tags = { "Certificates" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<List<GradStudentCertificates>> getAllStudentCertificateList(@PathVariable String pen) { 
+    public ResponseEntity<List<GradStudentCertificates>> getAllStudentCertificateList(@PathVariable String studentID) { 
     	logger.debug("getAllStudentCertificateList : ");
     	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
     	String accessToken = auth.getTokenValue();
-        return response.GET(commonService.getAllStudentCertificateList(pen,accessToken));
+        return response.GET(commonService.getAllStudentCertificateList(UUID.fromString(studentID),accessToken));
     }
     
     @GetMapping(EducGradCommonApiConstants.GET_ALGORITHM_RULES_MAIN_PROGRAM)

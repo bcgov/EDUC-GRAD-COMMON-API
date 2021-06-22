@@ -483,8 +483,8 @@ public class CommonServiceTest {
         gradStudentReport.setStudentID(studentID);
         gradStudentReport.setReport("TEST Report Body");
 
-        when(gradStudentReportsRepository.findByPenAndGradReportTypeCode(pen, reportTypeCode)).thenReturn(Optional.of(gradStudentReport));
-        var result = commonService.getStudentReportByType(pen, reportTypeCode);
+        when(gradStudentReportsRepository.findByStudentIDAndGradReportTypeCode(studentID, reportTypeCode)).thenReturn(Optional.of(gradStudentReport));
+        var result = commonService.getStudentReportByType(studentID, reportTypeCode);
         assertThat(result).isNotNull();
         assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_report.pdf]");
         assertThat(result.getBody()).isNotNull();
@@ -508,8 +508,8 @@ public class CommonServiceTest {
         studentCertificate.setCertificate("TEST Certificate Body");
         studentCertificate.setGradCertificateTypeCode(gradCertificateType.getCode());
 
-        when(gradStudentCertificatesRepository.findByPenAndGradCertificateTypeCode(pen, gradCertificateType.getCode())).thenReturn(Optional.of(studentCertificate));
-        var result = commonService.getStudentCertificateByType(pen, gradCertificateType.getCode());
+        when(gradStudentCertificatesRepository.findByStudentIDAndGradCertificateTypeCode(studentID, gradCertificateType.getCode())).thenReturn(Optional.of(studentCertificate));
+        var result = commonService.getStudentCertificateByType(studentID, gradCertificateType.getCode());
         assertThat(result).isNotNull();
         assertThat(result.getHeaders().get("Content-Disposition").toString()).isEqualTo("[inline; filename=student_TEST_certificate.pdf]");
         assertThat(result.getBody()).isNotNull();
@@ -541,7 +541,7 @@ public class CommonServiceTest {
         studentCertificate2.setGradCertificateTypeCode(gradCertificateType.getCode());
         gradStudentCertificatesList.add(studentCertificate2);
 
-        when(gradStudentCertificatesRepository.findByPen(pen)).thenReturn(gradStudentCertificatesList);
+        when(gradStudentCertificatesRepository.findByStudentID(studentID)).thenReturn(gradStudentCertificatesList);
 
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getCertificateByCodeUrl(), gradCertificateType.getCode()))).thenReturn(this.requestHeadersMock);
@@ -549,7 +549,7 @@ public class CommonServiceTest {
         when(this.requestHeadersMock.retrieve()).thenReturn(this.responseMock);
         when(this.responseMock.bodyToMono(GradCertificateTypes.class)).thenReturn(Mono.just(gradCertificateType));
 
-        var result = commonService.getAllStudentCertificateList(pen, "accessToken");
+        var result = commonService.getAllStudentCertificateList(studentID, "accessToken");
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);

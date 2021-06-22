@@ -15,6 +15,8 @@ public interface GradStudentReportsRepository extends JpaRepository<GradStudentR
 
    	Optional<GradStudentReportsEntity> findByPenAndGradReportTypeCode(String pen,String gradReportTypeCode);
    	
+   	Optional<GradStudentReportsEntity> findByStudentIDAndGradReportTypeCode(UUID studentID,String gradReportTypeCode);   	
+   	
    	@Query("select c from GradStudentReportsEntity c where c.gradReportTypeCode=:reportType")
 	List<GradStudentReportsEntity> existsByReportTypeCode(String reportType);
 }

@@ -1,9 +1,12 @@
 package ca.bc.gov.educ.api.common.controller;
 
-import ca.bc.gov.educ.api.common.model.dto.*;
-import ca.bc.gov.educ.api.common.service.CommonService;
-import ca.bc.gov.educ.api.common.util.GradValidation;
-import ca.bc.gov.educ.api.common.util.ResponseHelper;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +25,18 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import ca.bc.gov.educ.api.common.model.dto.GradAlgorithmRules;
+import ca.bc.gov.educ.api.common.model.dto.GradCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradCertificateTypes;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentCareerProgram;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentCertificates;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentReports;
+import ca.bc.gov.educ.api.common.model.dto.GradStudentUngradReasons;
+import ca.bc.gov.educ.api.common.model.dto.GradUngradReasons;
+import ca.bc.gov.educ.api.common.model.dto.StudentNote;
+import ca.bc.gov.educ.api.common.service.CommonService;
+import ca.bc.gov.educ.api.common.util.GradValidation;
+import ca.bc.gov.educ.api.common.util.ResponseHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 @ExtendWith(MockitoExtension.class)
@@ -230,7 +239,7 @@ public class CommonControllerTest {
     @Test
     public void testGetStudentReportByType() {
         // ID
-        final String pen = "123456789";
+        final UUID studentID = new UUID(1, 1);
         final String reportTypeCode = "TEST";
         final String reportBody = "Test Report Body";
 
@@ -239,20 +248,20 @@ public class CommonControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=student_"+reportTypeCode+"_report.pdf");
 
-        Mockito.when(commonService.getStudentReportByType(pen, reportTypeCode)).thenReturn(
+        Mockito.when(commonService.getStudentReportByType(studentID, reportTypeCode)).thenReturn(
                 ResponseEntity
                         .ok()
                         .headers(headers)
                         .contentType(MediaType.APPLICATION_PDF)
                         .body(new InputStreamResource(bis)));
-        commonController.getStudentReportByType(pen, reportTypeCode);
-        Mockito.verify(commonService).getStudentReportByType(pen, reportTypeCode);
+        commonController.getStudentReportByType(studentID.toString(), reportTypeCode);
+        Mockito.verify(commonService).getStudentReportByType(studentID, reportTypeCode);
 
     }
 
     @Test
     public void testGetStudentCertificateByType() {
-        final String pen = "123456789";
+        final UUID studentID = new UUID(1, 1);
         final String certificateTypeCode = "TEST";
         final String certificateBody = "Test Certificate Body";
 
@@ -261,14 +270,14 @@ public class CommonControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=student_"+certificateTypeCode+"_certificate.pdf");
 
-        Mockito.when(commonService.getStudentCertificateByType(pen, certificateTypeCode)).thenReturn(
+        Mockito.when(commonService.getStudentCertificateByType(studentID, certificateTypeCode)).thenReturn(
                 ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis)));
-        commonController.getStudentCertificateByType(pen, certificateTypeCode);
-        Mockito.verify(commonService).getStudentCertificateByType(pen, certificateTypeCode);
+        commonController.getStudentCertificateByType(studentID.toString(), certificateTypeCode);
+        Mockito.verify(commonService).getStudentCertificateByType(studentID, certificateTypeCode);
     }
 
     @Test
@@ -305,9 +314,9 @@ public class CommonControllerTest {
         Mockito.when(authentication.getDetails()).thenReturn(details);
         SecurityContextHolder.setContext(securityContext);
 
-        Mockito.when(commonService.getAllStudentCertificateList(pen, null)).thenReturn(gradStudentCertificatesList);
-        commonController.getAllStudentCertificateList(pen);
-        Mockito.verify(commonService).getAllStudentCertificateList(pen, null);
+        Mockito.when(commonService.getAllStudentCertificateList(studentID, null)).thenReturn(gradStudentCertificatesList);
+        commonController.getAllStudentCertificateList(studentID.toString());
+        Mockito.verify(commonService).getAllStudentCertificateList(studentID, null);
     }
 
     @Test
