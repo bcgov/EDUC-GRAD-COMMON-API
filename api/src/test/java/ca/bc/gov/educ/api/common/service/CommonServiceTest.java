@@ -144,12 +144,22 @@ public class CommonServiceTest {
         studentUngradReason.setPen("123456789");
         studentUngradReason.setStudentID(studentID);
         studentUngradReason.setUngradReasonCode(gradUngradReason.getCode());
+        studentUngradReason.setUngradReasonName("sada");
+        studentUngradReason.setUngradReasonDescription("asdasdad");
+        
+        final GradStudentUngradReasonsEntity studentUngradReasonE = new GradStudentUngradReasonsEntity();
+        studentUngradReasonE.setPen("123456789");
+        studentUngradReasonE.setStudentID(studentID);
+        studentUngradReasonE.setUngradReasonCode(gradUngradReason.getCode());
+        studentUngradReasonE.setUngradReasonDescription("asdasdad");
 
         // Student Ungrad Reasons Entity
-        final GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
+        GradStudentUngradReasonsEntity studentUngradReasonEntity = new GradStudentUngradReasonsEntity();
         studentUngradReasonEntity.setPen("123456789");
         studentUngradReasonEntity.setStudentID(studentID);
         studentUngradReasonEntity.setUngradReasonCode(gradUngradReason.getCode());
+        studentUngradReasonEntity.setId(new UUID(1, 1));
+        studentUngradReasonEntity.setUngradReasonDescription("asdasdad");
 
         when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
         when(this.requestHeadersUriMock.uri(String.format(constants.getUngradReasonByCodeUrl(),gradUngradReason.getCode()))).thenReturn(this.requestHeadersMock);
@@ -157,7 +167,7 @@ public class CommonServiceTest {
         when(this.requestHeadersMock.retrieve()).thenReturn(this.responseMock);
         when(this.responseMock.bodyToMono(GradUngradReasons.class)).thenReturn(Mono.just(gradUngradReason));
 
-        when(this.gradStudentUngradReasonsRepository.save(studentUngradReasonEntity)).thenReturn(studentUngradReasonEntity);
+        when(gradStudentUngradReasonsRepository.save(studentUngradReasonE)).thenReturn(studentUngradReasonEntity);
 
         var result = commonService.createGradStudentUngradReasons(studentUngradReason, "accessToken");
 
