@@ -36,5 +36,8 @@ public class GradStudentUngradReasonsEntity extends BaseEntity {
 	
 	@Column(name = "FK_GRAD_STUDENT_STUDENT_ID", nullable = false)
     private UUID studentID;
+	
+	@Column(name="UNGRAD_REASON_DESCRIPTION", nullable = true)
+	private String ungradReasonDescription;
 		
 }
